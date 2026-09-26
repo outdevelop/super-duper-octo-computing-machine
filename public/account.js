@@ -149,6 +149,8 @@
       .then(function () { busy(form, false); });
   });
 
+  $('#staffLogout').addEventListener('click', function () { $('#logoutBtn').click(); });
+
   $('#logoutBtn').addEventListener('click', function () {
     api('POST', '/auth/logout').catch(function () {}).then(function () {
       state.user = null;
@@ -159,19 +161,33 @@
 
   function showAuth() {
     document.body.classList.remove('is-loading');
+    $('#staffView').hidden = true;
     $('#authView').hidden = false;
     $('#appView').hidden = true;
     $('#accUser').hidden = true;
     $('#logoutBtn').hidden = true;
   }
 
+  // Сотрудник, открывший кабинет, видит подсказку со ссылкой на админку и кнопкой выхода.
+  function showStaff(user) {
+    document.body.classList.remove('is-loading');
+    $('#authView').hidden = true;
+    $('#appView').hidden = true;
+    $('#staffView').hidden = false;
+    $('#accUser').hidden = false;
+    $('#logoutBtn').hidden = false;
+    $('#accName').textContent = user.name;
+    $('#accAvatar').textContent = user.name.trim().charAt(0).toUpperCase() || '•';
+    $('#staffTitle').textContent = user.name + ', ' + (T.ROLES[user.role] || '').toLowerCase();
+  }
+
   function onLogin(user) {
-    // Сотрудники работают в админ-панели.
     if (user.role === 'manager' || user.role === 'admin') {
-      location.replace('admin.html');
+      showStaff(user);
       return;
     }
     state.user = user;
+    $('#staffView').hidden = true;
     document.body.classList.remove('is-loading');
     $('#authView').hidden = true;
     $('#appView').hidden = false;

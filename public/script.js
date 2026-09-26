@@ -223,10 +223,7 @@
   fetch('/api/me', { credentials: 'same-origin' })
     .then(function (res) { return res.ok ? res.json() : null; })
     .then(function (data) {
-      if (!data || !data.user) return;
-      var staff = data.user.role === 'manager' || data.user.role === 'admin';
-      $('#loginLink').textContent = staff ? 'Админка' : 'Кабинет';
-      if (staff) $('#loginLink').href = 'admin.html';
+      if (data && data.user) $('#loginLink').textContent = 'Кабинет';
     })
     .catch(function () {});
 

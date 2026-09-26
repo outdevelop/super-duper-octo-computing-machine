@@ -12,9 +12,16 @@
     "dev": "node --no-warnings --watch server/index.js",
     "create-admin": "node --no-warnings scripts/create-staff.js admin",
     "create-manager": "node --no-warnings scripts/create-staff.js manager",
+    "demo": "node --no-warnings scripts/demo.js",
+    "screenshots": "node --no-warnings scripts/screenshots.js",
     "test": "node --no-warnings --test test/*.test.js"
   },
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@fontsource-variable/manrope": "5.3.0",
+    "@fontsource-variable/unbounded": "5.3.0",
+    "playwright": "1.56.1"
   }
 }

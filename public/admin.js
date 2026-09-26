@@ -1060,7 +1060,6 @@
           '<div class="kpi"><p class="kpi__label">На сумму</p><p class="kpi__value">' + money(total) + '</p></div>' +
           '<div class="kpi"><p class="kpi__label">Доступ в кабинет</p><p class="kpi__value">' + clientAccess(c) + '</p></div>' +
         '</section>' +
-        '<div class="adm-grid adm-grid--detail">' +
           '<div class="panel"><div class="panel__head"><h3>Заказы клиента</h3></div>' +
             '<div class="table-wrap"><table class="table"><thead><tr><th>Заказ</th><th>Маршрут</th><th>Автомобиль</th><th>Статус</th><th>Оплата</th><th class="num">Цена</th></tr></thead><tbody>' +
             (res.orders.length ? res.orders.map(function (o) {
@@ -1068,7 +1067,7 @@
                 '<td>→ ' + esc(o.city) + '</td><td>' + esc(o.carModel) + '</td><td>' + badge(o.status) + '</td><td>' + payPill(o) + '</td><td class="num">' + money(o.price) + '</td></tr>';
             }).join('') : '<tr class="empty-row"><td colspan="6">Заказов пока нет</td></tr>') +
             '</tbody></table></div></div>' +
-          '<div>' +
+          '<div class="adm-grid adm-grid--three">' +
             '<form class="panel" id="clientForm" novalidate><h3>Данные клиента</h3><div class="acc-form acc-form--light">' +
               field('Имя', input('name', c.name, 'maxlength="100" required')) +
               field('Телефон', input('phone', c.phone, 'type="tel" data-phone required')) +
@@ -1079,14 +1078,13 @@
             '<form class="panel" id="passForm" novalidate><h3>Пароль от кабинета</h3><div class="acc-form acc-form--light">' +
               '<p class="panel__sub">' + (c.hasPassword ? 'Новый пароль заменит старый, все сессии клиента завершатся.' : 'У клиента ещё нет пароля. Задайте его и сообщите клиенту — он сможет входить по email.') + '</p>' +
               input('password', '', 'type="text" minlength="8" autocomplete="off" placeholder="Новый пароль, от 8 символов"') +
-              '<button type="button" class="btn-link" id="genPass">Сгенерировать</button>' +
+              '<button type="button" class="btn-link adm-gen" id="genPass">Сгенерировать надёжный пароль</button>' +
               '<button type="submit" class="btn btn--outline-dark">Задать пароль</button><p class="form-status" role="status"></p>' +
             '</div></form>' +
             '<div class="panel ' + (c.blocked ? '' : 'danger-zone') + '"><h3>' + (c.blocked ? 'Клиент заблокирован' : 'Блокировка') + '</h3>' +
               '<p class="panel__sub">' + (c.blocked ? 'Клиент не может войти в кабинет.' : 'Клиент не сможет войти в кабинет, текущие сессии завершатся. Заказы сохранятся.') + '</p>' +
               '<button class="btn ' + (c.blocked ? 'btn--dark' : 'btn--danger') + ' panel__action" id="blockBtn">' + (c.blocked ? 'Разблокировать' : 'Заблокировать') + '</button></div>' +
-          '</div>' +
-        '</div>';
+          '</div>';
 
       $('#clientForm').addEventListener('submit', function (e) {
         e.preventDefault();

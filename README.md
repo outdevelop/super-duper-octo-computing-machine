@@ -32,6 +32,33 @@
 | Настройки сайта | Телефон, email, адрес, часы работы, ссылки на мессенджеры | админ |
 | Журнал действий | Кто, когда и что менял | админ |
 
+## Скриншоты
+
+Все снимки лежат в [`docs/screenshots/`](docs/screenshots) и пересоздаются командой `npm run screenshots`
+(сайт поднимается на временной базе с демо-данными).
+
+| Лендинг | Калькулятор |
+|---|---|
+| ![Лендинг](docs/screenshots/landing-hero.png) | ![Калькулятор](docs/screenshots/landing-calculator.png) |
+
+| Кабинет клиента: заказы | Кабинет клиента: заказ |
+|---|---|
+| ![Заказы клиента](docs/screenshots/account-orders.png) | ![Заказ](docs/screenshots/account-order.png) |
+
+| Админка: дашборд | Админка: заказы |
+|---|---|
+| ![Дашборд](docs/screenshots/admin-dashboard.png) | ![Заказы](docs/screenshots/admin-orders.png) |
+
+| Админка: заказ | Админка: тарифы |
+|---|---|
+| ![Заказ](docs/screenshots/admin-order.png) | ![Тарифы](docs/screenshots/admin-tariffs.png) |
+
+| Телефон: сайт | Телефон: заказ клиента | Телефон: админка |
+|---|---|---|
+| ![](docs/screenshots/mobile-landing-hero.png) | ![](docs/screenshots/mobile-account-order.png) | ![](docs/screenshots/mobile-admin-dashboard.png) |
+
+Остальные разделы — заявки, клиенты, сотрудники, настройки, журнал, блоки лендинга — в той же папке.
+
 ## Запуск
 
 Нужен **Node.js 22.5+**: база данных — встроенный `node:sqlite`, нативных модулей нет.
@@ -43,6 +70,8 @@ npm start            # http://localhost:3000, админка — http://localhos
 ```
 
 - `npm run create-manager -- email пароль [имя]` — создать менеджера (или сделать это в разделе «Сотрудники»).
+- `npm run demo` — сайт на отдельной демо-базе с заказами, клиентами и заявками (логины выводятся в консоль).
+- `npm run screenshots` — обновить скриншоты в `docs/screenshots/`.
 - `npm run dev` — перезапуск сервера при изменениях.
 - `npm test` — тесты API.
 
@@ -96,7 +125,11 @@ server/
   auth.js            пароли, сессии, роли, лимитер
   validate.js        проверка входных данных
   db.js              схема SQLite и миграции
-scripts/create-staff.js   создание администратора/менеджера
+scripts/
+  create-staff.js    создание администратора/менеджера
+  demo.js, demo-data.js   демо-база
+  screenshots.js     генератор скриншотов
+docs/screenshots/    скриншоты
 test/                тесты API (node:test)
 ```
 
