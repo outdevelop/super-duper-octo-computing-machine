@@ -67,7 +67,7 @@ if (require.main === module) {
   const db = open();
   const port = Number(process.env.PORT) || 3000;
   createApp({ db }).listen(port, () => {
-    console.log(`EAST LINE: http://localhost:${port}`);
+    console.log(`Карго Экспресс: http://localhost:${port}`);
   });
 }
 

@@ -38,7 +38,7 @@ function publicUser(u) {
 }
 
 function orderNumber(id) {
-  return 'EL-' + String(id).padStart(5, '0');
+  return 'КЭ-' + String(id).padStart(5, '0');
 }
 
 function publicOrder(o) {

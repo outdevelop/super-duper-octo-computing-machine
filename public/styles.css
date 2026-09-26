@@ -95,10 +95,10 @@ button { font: inherit; cursor: pointer; }
 .logo { display: inline-flex; align-items: center; gap: 10px; }
 .logo__mark { width: 32px; height: 32px; color: var(--text); }
 .logo__text { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: .04em; }
-.logo__text b { font-weight: 800; margin-left: 2px; }
+.logo__text b { font-weight: 800; margin-left: .3em; }
 
-.nav { display: flex; gap: 28px; margin-left: auto; }
-.nav a { font-size: 14px; font-weight: 500; color: var(--muted); position: relative; transition: color .2s; }
+.nav { display: flex; gap: 24px; margin-left: auto; }
+.nav a { white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--muted); position: relative; transition: color .2s; }
 .nav a::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px;
   background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease);
@@ -107,7 +107,7 @@ button { font: inherit; cursor: pointer; }
 .nav a:hover::after { transform: scaleX(1); }
 
 .header__actions { display: flex; align-items: center; gap: 18px; }
-.header__phone { font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
+.header__phone { white-space: nowrap; font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
 .header__login { font-weight: 600; font-size: 14px; color: var(--muted); transition: color .2s; }
 .header__login:hover { color: var(--text); }
 .burger { display: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; position: relative; }
@@ -367,7 +367,8 @@ button { font: inherit; cursor: pointer; }
 /* ============ FOOTER ============ */
 .footer { background: var(--bg); border-top: 1px solid var(--line); padding: 80px 0 32px; }
 .footer__top { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; padding-bottom: 56px; border-bottom: 1px solid var(--line); }
-.logo--big .logo__text { font-size: clamp(48px, 10vw, 140px); letter-spacing: -.04em; line-height: .9; }
+.logo--big .logo__text { font-size: clamp(40px, 10vw, 140px); letter-spacing: -.04em; line-height: .9; }
+.logo--big .logo__text b { display: block; margin-left: 0; }
 .footer__slogan { color: var(--muted); font-size: 17px; }
 .footer__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; padding: 48px 0; }
 .footer__grid h4 { font-family: var(--font-body); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 16px; }
@@ -383,9 +384,11 @@ button { font: inherit; cursor: pointer; }
 .no-js .reveal { opacity: 1; transform: none; }
 
 /* ============ RESPONSIVE ============ */
-@media (max-width: 1100px) {
-  .nav { gap: 20px; }
+@media (max-width: 1360px) {
   .header__phone { display: none; }
+}
+
+@media (max-width: 1100px) {
   .hero__inner { grid-template-columns: 1fr; }
   .hero__visual { max-width: 620px; }
   .route-card { margin-left: 0; }
@@ -394,9 +397,7 @@ button { font: inherit; cursor: pointer; }
   .step:nth-child(n+4) { border-top: 1px solid var(--line); }
   .features { grid-template-columns: repeat(2, 1fr); }
   .feature--wide { grid-row: auto; min-height: 320px; }
-}
 
-@media (max-width: 900px) {
   .burger { display: block; }
   .nav {
     position: fixed; inset: 76px 0 auto; margin: 0;
@@ -412,7 +413,9 @@ button { font: inherit; cursor: pointer; }
   .nav a::after { display: none; }
   .header__actions { margin-left: auto; }
   .header.menu-open { background: rgba(10,10,10,.97); border-color: var(--line); }
+}
 
+@media (max-width: 900px) {
   .section__head { grid-template-columns: 1fr; gap: 16px; }
   .section__num { padding-top: 0; }
   .section__lead { justify-self: start; }
@@ -431,6 +434,7 @@ button { font: inherit; cursor: pointer; }
 @media (max-width: 640px) {
   body { font-size: 15px; }
   .header__inner { height: 64px; gap: 12px; }
+  .header .logo__text { font-size: 15px; letter-spacing: .02em; }
   .nav { inset: 64px 0 auto; }
   .header .btn--sm { display: none; }
   .hero { padding-top: 104px; min-height: auto; }

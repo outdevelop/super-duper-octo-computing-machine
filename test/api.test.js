@@ -86,7 +86,7 @@ test('заказы: цена считается на сервере, чужие 
   assert.equal(created.data.order.price, expected.price);
   assert.deepEqual(created.data.order.options, ['closed', 'door']);
   assert.equal(created.data.order.vin, 'JTMHV05J604123456');
-  assert.equal(created.data.order.number, 'EL-00001');
+  assert.equal(created.data.order.number, 'КЭ-00001');
   assert.equal(created.data.order.events.length, 1);
   assert.equal(created.data.order.client, undefined);
 
