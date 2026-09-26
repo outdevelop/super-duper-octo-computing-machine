@@ -1,0 +1,19 @@
+{
+  "name": "eastline-autovoz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт и личный кабинет компании по перевозке автомобилей автовозом из Владивостока",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node --no-warnings server/index.js",
+    "dev": "node --no-warnings --watch server/index.js",
+    "create-manager": "node --no-warnings scripts/create-manager.js",
+    "test": "node --no-warnings --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ru" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EAST LINE — доставка автомобилей автовозом из Владивостока</title>
+  <meta name="description" content="Перевозка автомобилей автовозом из Владивостока в любой город России. Фиксированная цена, страховка, GPS-трекинг, доставка до двери.">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="header" id="top">
+  <div class="container header__inner">
+    <a href="#top" class="logo" aria-label="EAST LINE — на главную">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 20h16M10 14h12M12 8h8" stroke="var(--logo-stroke)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+      <span class="logo__text">EAST<b>LINE</b></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Основная навигация">
+      <a href="#calc">Расчёт</a>
+      <a href="#how">Как работаем</a>
+      <a href="#routes">Направления</a>
+      <a href="#fleet">Автопарк</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a class="header__phone" href="tel:+79000000000">+7 (900) 000-00-00</a>
+      <a class="header__login" href="account.html" id="loginLink">Войти</a>
+      <a class="btn btn--sm btn--light" href="#request">Заявка</a>
+      <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <p class="eyebrow reveal"><span class="dot"></span>Отправки из Владивостока каждый день</p>
+        <h1 class="hero__title reveal">
+          Доставим авто<br>
+          из <span class="outline">Владивостока</span><br>
+          в любой город
+        </h1>
+        <p class="hero__lead reveal">
+          Автовозы от порта до вашей двери. Фиксированная цена в договоре, полная страховка
+          и онлайн-отслеживание на всём пути — от 9&nbsp;000&nbsp;км до последнего метра.
+        </p>
+        <div class="hero__cta reveal">
+          <a href="#calc" class="btn btn--light btn--lg">Рассчитать стоимость <span class="arrow">→</span></a>
+          <a href="#how" class="btn btn--ghost btn--lg">Как это работает</a>
+        </div>
+
+        <ul class="hero__stats reveal">
+          <li><b data-count="12400">0</b><span>машин доставлено</span></li>
+          <li><b data-count="180" data-suffix="+">0</b><span>городов России</span></li>
+          <li><b>24/7</b><span>поддержка и GPS-трекинг</span></li>
+        </ul>
+      </div>
+
+      <div class="hero__visual reveal" aria-hidden="true">
+        <div class="route-card">
+          <div class="route-card__head">
+            <span class="tag">В пути</span>
+            <span class="mono">№ EL-24817</span>
+          </div>
+          <div class="route-card__cities">
+            <div><small>Откуда</small><b>Владивосток</b></div>
+            <div class="route-card__line"><span></span></div>
+            <div class="ta-r"><small>Куда</small><b>Москва</b></div>
+          </div>
+          <div class="route-card__progress"><span></span></div>
+          <div class="route-card__meta">
+            <span>Toyota Land Cruiser 300</span>
+            <span>Прибытие через 6 дн.</span>
+          </div>
+        </div>
+
+        <svg class="truck" viewBox="0 0 640 260" fill="none">
+          <!-- trailer frame -->
+          <path d="M40 150 L440 150 M60 95 L430 95" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <path d="M60 95 L60 150 M180 95 L180 150 M300 95 L300 150 M430 95 L440 150" stroke="currentColor" stroke-width="3"/>
+          <path d="M40 150 L40 180 L450 180 L450 150" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <!-- top cars -->
+          <path d="M80 92 q8-26 40-28 h50 q22 0 36 20 l10 8 z" fill="currentColor" opacity=".9"/>
+          <path d="M240 92 q8-26 40-28 h50 q22 0 36 20 l10 8 z" fill="currentColor" opacity=".9"/>
+          <!-- bottom cars -->
+          <path d="M70 147 q8-26 40-28 h50 q22 0 36 20 l10 8 z" fill="currentColor" opacity=".55"/>
+          <path d="M230 147 q8-26 40-28 h50 q22 0 36 20 l10 8 z" fill="currentColor" opacity=".55"/>
+          <!-- cab -->
+          <path d="M470 180 L470 90 q0-12 12-12 h60 q14 0 22 12 l34 50 q6 8 6 18 V180 z" fill="currentColor"/>
+          <path d="M540 92 h-52 v38 h80 z" fill="var(--bg)" opacity=".9"/>
+          <!-- wheels -->
+          <g fill="var(--bg)" stroke="currentColor" stroke-width="6">
+            <circle cx="95" cy="190" r="20"/><circle cx="145" cy="190" r="20"/>
+            <circle cx="370" cy="190" r="20"/><circle cx="420" cy="190" r="20"/>
+            <circle cx="510" cy="190" r="20"/><circle cx="570" cy="190" r="20"/>
+          </g>
+          <path d="M0 222 H640" stroke="currentColor" stroke-width="2" stroke-dasharray="14 12" opacity=".4" class="road"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Москва</span><span>Санкт-Петербург</span><span>Новосибирск</span><span>Екатеринбург</span><span>Казань</span><span>Краснодар</span><span>Иркутск</span><span>Красноярск</span><span>Хабаровск</span><span>Омск</span><span>Уфа</span><span>Самара</span>
+        <span>Москва</span><span>Санкт-Петербург</span><span>Новосибирск</span><span>Екатеринбург</span><span>Казань</span><span>Краснодар</span><span>Иркутск</span><span>Красноярск</span><span>Хабаровск</span><span>Омск</span><span>Уфа</span><span>Самара</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section class="section section--light" id="calc">
+    <div class="container">
+      <div class="section__head">
+        <span class="section__num">01</span>
+        <h2 class="section__title">Калькулятор<br>стоимости</h2>
+        <p class="section__lead">Предварительная цена за 10 секунд. Точную сумму менеджер зафиксирует в договоре — она не изменится в пути.</p>
+      </div>
+
+      <div class="calc">
+        <form class="calc__form" id="calcForm" novalidate>
+          <div class="field">
+            <label>Откуда</label>
+            <div class="field__static">Владивосток</div>
+          </div>
+
+          <div class="field">
+            <label for="city">Куда</label>
+            <select id="city" name="city"></select>
+          </div>
+
+          <fieldset class="field">
+            <legend>Тип автомобиля</legend>
+            <div class="chips" id="carType">
+              <label class="chip"><input type="radio" name="type" value="sedan" checked><span>Седан / хэтчбек</span></label>
+              <label class="chip"><input type="radio" name="type" value="crossover"><span>Кроссовер</span></label>
+              <label class="chip"><input type="radio" name="type" value="suv"><span>Внедорожник / минивэн</span></label>
+              <label class="chip"><input type="radio" name="type" value="van"><span>Микроавтобус</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Опции</legend>
+            <div class="toggles">
+              <label class="toggle">
+                <input type="checkbox" name="opt" value="closed">
+                <span class="toggle__ui"></span>
+                <span><b>Закрытый автовоз</b><small>Для премиум и спорткаров</small></span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" name="opt" value="door">
+                <span class="toggle__ui"></span>
+                <span><b>Доставка до двери</b><small>Эвакуатор в городе получения</small></span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" name="opt" value="port">
+                <span class="toggle__ui"></span>
+                <span><b>Забор из порта / СВХ</b><small>Получим авто за вас</small></span>
+              </label>
+            </div>
+          </fieldset>
+        </form>
+
+        <aside class="calc__result" aria-live="polite">
+          <p class="calc__label">Стоимость доставки</p>
+          <p class="calc__price"><span id="price">—</span>&nbsp;₽</p>
+          <dl class="calc__details">
+            <div><dt>Срок в пути</dt><dd id="days">—</dd></div>
+            <div><dt>Расстояние</dt><dd id="distance">—</dd></div>
+            <div><dt>Страховка</dt><dd>включена</dd></div>
+          </dl>
+          <a href="account.html#new" class="btn btn--dark btn--block" id="calcCta">Оформить заказ <span class="arrow">→</span></a>
+          <p class="calc__note">Цена ориентировочная, актуальна на текущий сезон.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section__head">
+        <span class="section__num">02</span>
+        <h2 class="section__title">Пять шагов<br>до ключей в руках</h2>
+        <p class="section__lead">Вы не тратите время на логистику. Мы берём на себя всё — от получения машины в порту до передачи у вашего дома.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step__num">01</span>
+          <h3>Заявка</h3>
+          <p>Оставляете заявку на сайте или звоните. Менеджер уточняет детали за 15 минут.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">02</span>
+          <h3>Договор</h3>
+          <p>Фиксируем цену и сроки. Подписываем онлайн — приезжать никуда не нужно.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">03</span>
+          <h3>Приёмка</h3>
+          <p>Забираем авто в порту, на СВХ или у продавца. Фото- и видеоосмотр — 60+ кадров.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">04</span>
+          <h3>В пути</h3>
+          <p>GPS-трекинг 24/7 и личный менеджер в мессенджере. Вы всегда знаете, где машина.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">05</span>
+          <h3>Выдача</h3>
+          <p>Сверяем состояние по акту, передаём ключи. Оплата — только после осмотра.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section--dark-alt">
+    <div class="container">
+      <div class="section__head">
+        <span class="section__num">03</span>
+        <h2 class="section__title">Почему<br>выбирают нас</h2>
+      </div>
+
+      <div class="features">
+        <article class="feature feature--wide reveal">
+          <span class="feature__big">100%</span>
+          <h3>Страхование полной стоимости</h3>
+          <p>Каждый автомобиль застрахован на рыночную стоимость. Любое повреждение компенсируем в течение 10 рабочих дней.</p>
+        </article>
+        <article class="feature reveal">
+          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <h3>GPS-трекинг</h3>
+          <p>Ссылка на карту с автовозом в реальном времени.</p>
+        </article>
+        <article class="feature reveal">
+          <svg class="feature__icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h4"/></svg>
+          <h3>Цена без сюрпризов</h3>
+          <p>Сумма в договоре окончательная. Никаких доплат за топливо и простои.</p>
+        </article>
+        <article class="feature reveal">
+          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+          <h3>Отправка за 24 часа</h3>
+          <p>Собственный парк — не ждём, пока соберётся полная загрузка.</p>
+        </article>
+        <article class="feature reveal">
+          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>
+          <h3>Оплата по факту</h3>
+          <p>Основную часть оплачиваете после осмотра машины в городе получения.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROUTES -->
+  <section class="section section--light" id="routes">
+    <div class="container">
+      <div class="section__head">
+        <span class="section__num">04</span>
+        <h2 class="section__title">Популярные<br>направления</h2>
+        <p class="section__lead">Цены для седана на открытом автовозе. Не нашли свой город? Доставим в любой — просто напишите.</p>
+      </div>
+
+      <div class="routes" id="routesTable" role="table" aria-label="Популярные направления">
+        <div class="routes__row routes__row--head" role="row">
+          <span role="columnheader">Город</span>
+          <span role="columnheader">Расстояние</span>
+          <span role="columnheader">Срок</span>
+          <span role="columnheader">Цена от</span>
+        </div>
+      </div>
+      <button class="btn btn--outline-dark" id="routesMore">Показать все направления</button>
+    </div>
+  </section>
+
+  <!-- FLEET -->
+  <section class="section" id="fleet">
+    <div class="container">
+      <div class="section__head">
+        <span class="section__num">05</span>
+        <h2 class="section__title">Собственный<br>автопарк</h2>
+        <p class="section__lead">Не перепродаём заказы посредникам. Все автовозы — наши, водители — в штате.</p>
+      </div>
+
+      <div class="fleet">
+        <article class="fleet__card reveal">
+          <div class="fleet__top">
+            <span class="tag tag--dark">Открытый</span>
+            <span class="fleet__count">48 ед.</span>
+          </div>
+          <h3>Автовоз на 8 машин</h3>
+          <p>Двухъярусная платформа с гидравликой. Оптимален по цене для большинства автомобилей.</p>
+          <ul class="fleet__specs">
+            <li><span>Вместимость</span><b>до 8 авто</b></li>
+            <li><span>Крепление</span><b>за колёса</b></li>
+            <li><span>Трекинг</span><b>GPS / ГЛОНАСС</b></li>
+          </ul>
+        </article>
+        <article class="fleet__card fleet__card--inverse reveal">
+          <div class="fleet__top">
+            <span class="tag">Закрытый</span>
+            <span class="fleet__count">12 ед.</span>
+          </div>
+          <h3>Закрытый автовоз</h3>
+          <p>Полная защита от погоды, пыли и сколов. Для премиальных, коллекционных и спортивных автомобилей.</p>
+          <ul class="fleet__specs">
+            <li><span>Вместимость</span><b>до 6 авто</b></li>
+            <li><span>Погрузка</span><b>низкий угол заезда</b></li>
+            <li><span>Защита</span><b>тент + пломба</b></li>
+          </ul>
+        </article>
+        <article class="fleet__card reveal">
+          <div class="fleet__top">
+            <span class="tag tag--dark">Экспресс</span>
+            <span class="fleet__count">20 ед.</span>
+          </div>
+          <h3>Эвакуатор-сцепка</h3>
+          <p>1–3 машины без попутной загрузки. Когда нужно быстрее, чем по графику.</p>
+          <ul class="fleet__specs">
+            <li><span>Вместимость</span><b>до 3 авто</b></li>
+            <li><span>Отправка</span><b>в день заявки</b></li>
+            <li><span>Скорость</span><b>до 900 км/сут</b></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section--light" id="faq">
+    <div class="container faq-wrap">
+      <div class="section__head section__head--stack">
+        <span class="section__num">06</span>
+        <h2 class="section__title">Частые<br>вопросы</h2>
+        <p class="section__lead">Не нашли ответ? Позвоните — объясним на пальцах.</p>
+        <a href="tel:+79000000000" class="btn btn--dark">+7 (900) 000-00-00</a>
+      </div>
+
+      <div class="faq">
+        <details class="faq__item" open>
+          <summary>Какие документы нужны для перевозки?</summary>
+          <p>Паспорт отправителя и получателя, СТС или ПТС (электронный ПТС тоже подходит). Для автомобилей из-за рубежа — таможенные документы, которые мы можем получить за вас на СВХ.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Что будет, если машину повредят в пути?</summary>
+          <p>При приёмке фиксируем состояние на 60+ фото и видео. Если при выдаче найдены новые повреждения — компенсируем ремонт по страховке в течение 10 рабочих дней. Сумма покрытия — полная рыночная стоимость автомобиля.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Можно ли положить вещи в салон?</summary>
+          <p>Да, до 50 кг в багажнике без доплаты. Вещи описываются в акте приёмки. Запрещены легковоспламеняющиеся жидкости и ценности.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Как происходит оплата?</summary>
+          <p>Предоплата 10% при подписании договора, остаток — после осмотра автомобиля в городе получения. Принимаем безнал, карты и оплату по счёту для юрлиц с НДС.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Сколько бензина должно быть в баке?</summary>
+          <p>Достаточно 5–10 литров — только для погрузки и выгрузки. Полный бак не нужен.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Возите ли вы машины зимой?</summary>
+          <p>Круглый год. Зимой водители идут по трассам с проверенными стоянками, а для ценных автомобилей рекомендуем закрытый автовоз.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUEST -->
+  <section class="section request" id="request">
+    <div class="container request__inner">
+      <div class="request__text">
+        <span class="section__num">07</span>
+        <h2 class="section__title">Отправим вашу<br>машину уже завтра</h2>
+        <p class="section__lead">Оставьте номер — перезвоним за 15 минут, рассчитаем точную стоимость и забронируем место на ближайшем автовозе.</p>
+        <ul class="request__bullets">
+          <li>Бесплатная консультация</li>
+          <li>Цена фиксируется в договоре</li>
+          <li>Без предоплаты за расчёт</li>
+        </ul>
+      </div>
+
+      <form class="request__form" id="requestForm" novalidate>
+        <div class="input">
+          <input type="text" id="rName" name="name" placeholder=" " autocomplete="name" required>
+          <label for="rName">Ваше имя</label>
+        </div>
+        <div class="input">
+          <input type="tel" id="rPhone" name="phone" placeholder=" " autocomplete="tel" required>
+          <label for="rPhone">Телефон</label>
+        </div>
+        <div class="input">
+          <input type="text" id="rRoute" name="route" placeholder=" ">
+          <label for="rRoute">Направление и модель авто</label>
+        </div>
+        <label class="consent">
+          <input type="checkbox" name="consent" required checked>
+          <span>Согласен на обработку персональных данных</span>
+        </label>
+        <button type="submit" class="btn btn--light btn--block btn--lg">Отправить заявку <span class="arrow">→</span></button>
+        <p class="form-status" id="formStatus" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div class="footer__top">
+      <a href="#top" class="logo logo--big" aria-label="EAST LINE — наверх">
+        <span class="logo__text">EAST<b>LINE</b></span>
+      </a>
+      <p class="footer__slogan">Автомобили с Дальнего Востока —<br>в любую точку страны.</p>
+    </div>
+
+    <div class="footer__grid">
+      <div>
+        <h4>Контакты</h4>
+        <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+        <a href="mailto:info@example.com">info@example.com</a>
+      </div>
+      <div>
+        <h4>Офис и площадка</h4>
+        <p>г. Владивосток,<br>ул. Примерная, 1</p>
+        <p>Ежедневно 08:00–20:00 (Влд)</p>
+      </div>
+      <div>
+        <h4>Мессенджеры</h4>
+        <a href="#">Telegram</a>
+        <a href="#">WhatsApp</a>
+        <a href="#">VK</a>
+      </div>
+      <div>
+        <h4>Разделы</h4>
+        <a href="#calc">Калькулятор</a>
+        <a href="#routes">Направления</a>
+        <a href="#faq">Вопросы</a>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© <span id="year"></span> EAST LINE. Все права защищены.</span>
+      <a href="account.html">Личный кабинет</a>
+    </div>
+  </div>
+</footer>
+
+<a href="#request" class="fab" aria-label="Оставить заявку">Заявка →</a>
+
+<script src="tariffs.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

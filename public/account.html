@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Личный кабинет — EAST LINE</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+</head>
+<body class="acc is-loading">
+
+<header class="header is-scrolled">
+  <div class="container header__inner">
+    <a href="./" class="logo" aria-label="EAST LINE — на главную">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 20h16M10 14h12M12 8h8" stroke="var(--logo-stroke)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+      <span class="logo__text">EAST<b>LINE</b></span>
+    </a>
+    <div class="header__actions">
+      <a class="header__login" href="./">← На сайт</a>
+      <span class="acc-user" id="accUser" hidden>
+        <span class="acc-user__avatar" id="accAvatar"></span>
+        <span class="acc-user__name" id="accName"></span>
+      </span>
+      <button class="btn btn--sm btn--ghost" id="logoutBtn" hidden>Выйти</button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== AUTH ========== -->
+<main class="auth" id="authView" hidden>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="container auth__inner">
+    <div class="auth__intro">
+      <p class="eyebrow"><span class="dot"></span>Личный кабинет клиента</p>
+      <h1 class="auth__title">Ваши машины —<br>под <span class="outline">контролем</span></h1>
+      <ul class="auth__list">
+        <li><b>Статус в реальном времени</b><span>Приёмка, погрузка, в пути, прибытие — всё с датами.</span></li>
+        <li><b>Оформление за минуту</b><span>Цена рассчитывается сразу и фиксируется в заявке.</span></li>
+        <li><b>Вся история в одном месте</b><span>Все перевозки и документы по ним.</span></li>
+      </ul>
+    </div>
+
+    <div class="auth__card">
+      <div class="tabs" role="tablist">
+        <button class="tabs__btn is-active" role="tab" aria-selected="true" data-auth-tab="login">Вход</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" data-auth-tab="register">Регистрация</button>
+      </div>
+
+      <form class="acc-form" id="loginForm" novalidate>
+        <div class="input">
+          <input type="email" id="lEmail" name="email" placeholder=" " autocomplete="email" required>
+          <label for="lEmail">Email</label>
+        </div>
+        <div class="input">
+          <input type="password" id="lPass" name="password" placeholder=" " autocomplete="current-password" required>
+          <label for="lPass">Пароль</label>
+        </div>
+        <button type="submit" class="btn btn--light btn--block btn--lg">Войти <span class="arrow">→</span></button>
+        <p class="form-status" role="status"></p>
+      </form>
+
+      <form class="acc-form" id="registerForm" novalidate hidden>
+        <div class="input">
+          <input type="text" id="rgName" name="name" placeholder=" " autocomplete="name" required maxlength="100">
+          <label for="rgName">Имя</label>
+        </div>
+        <div class="input">
+          <input type="tel" id="rgPhone" name="phone" placeholder=" " autocomplete="tel" required data-phone>
+          <label for="rgPhone">Телефон</label>
+        </div>
+        <div class="input">
+          <input type="email" id="rgEmail" name="email" placeholder=" " autocomplete="email" required>
+          <label for="rgEmail">Email</label>
+        </div>
+        <div class="input">
+          <input type="password" id="rgPass" name="password" placeholder=" " autocomplete="new-password" required minlength="8">
+          <label for="rgPass">Пароль (от 8 символов)</label>
+        </div>
+        <label class="consent">
+          <input type="checkbox" name="consent" required>
+          <span>Согласен на обработку персональных данных</span>
+        </label>
+        <button type="submit" class="btn btn--light btn--block btn--lg">Создать аккаунт <span class="arrow">→</span></button>
+        <p class="form-status" role="status"></p>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- ========== APP ========== -->
+<main class="app" id="appView" hidden>
+  <div class="container app__inner">
+    <aside class="app__side">
+      <nav class="side-nav" id="sideNav" aria-label="Разделы кабинета">
+        <a href="#orders" data-route="orders">Мои заказы</a>
+        <a href="#new" data-route="new">Новый заказ</a>
+        <a href="#leads" data-route="leads" data-manager hidden>Заявки с сайта</a>
+        <a href="#profile" data-route="profile">Профиль</a>
+      </nav>
+      <div class="side-help">
+        <p>Личный менеджер</p>
+        <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+      </div>
+    </aside>
+
+    <section class="app__main">
+
+      <!-- ORDERS -->
+      <div class="view" data-view="orders" hidden>
+        <div class="view__head">
+          <div>
+            <h1 class="view__title" id="ordersTitle">Мои заказы</h1>
+            <p class="view__sub" id="ordersSub">Все перевозки и их текущий статус</p>
+          </div>
+          <a href="#new" class="btn btn--dark" data-client-only>+ Новый заказ</a>
+        </div>
+
+        <div class="stats" id="stats" hidden></div>
+
+        <div class="filters" id="statusFilter" data-manager hidden></div>
+
+        <div class="orders" id="ordersList"></div>
+        <div class="empty" id="ordersEmpty" hidden>
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 40h40V22H6zM46 28h8l6 8v4H46" /><circle cx="18" cy="44" r="5"/><circle cx="50" cy="44" r="5"/></svg>
+          <h3>Заказов пока нет</h3>
+          <p>Рассчитайте стоимость и оформите первую перевозку — это займёт минуту.</p>
+          <a href="#new" class="btn btn--dark" data-client-only>Оформить заказ</a>
+        </div>
+      </div>
+
+      <!-- ORDER DETAILS -->
+      <div class="view" data-view="order" hidden>
+        <a href="#orders" class="back">← Все заказы</a>
+        <div id="orderDetails"></div>
+      </div>
+
+      <!-- NEW ORDER -->
+      <div class="view" data-view="new" hidden>
+        <div class="view__head">
+          <div>
+            <h1 class="view__title">Новый заказ</h1>
+            <p class="view__sub">Отправка из Владивостока. Цена фиксируется при создании заявки.</p>
+          </div>
+        </div>
+
+        <div class="calc">
+          <form class="calc__form" id="orderForm" novalidate>
+            <div class="grid-2">
+              <div class="field">
+                <label>Откуда</label>
+                <div class="field__static">Владивосток</div>
+              </div>
+              <div class="field">
+                <label for="oCity">Куда</label>
+                <select id="oCity" name="city"></select>
+              </div>
+            </div>
+
+            <fieldset class="field">
+              <legend>Тип автомобиля</legend>
+              <div class="chips" id="oTypes"></div>
+            </fieldset>
+
+            <fieldset class="field">
+              <legend>Опции</legend>
+              <div class="toggles" id="oOptions"></div>
+            </fieldset>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="oModel">Марка и модель *</label>
+                <input class="field__input" id="oModel" name="carModel" maxlength="120" placeholder="Toyota Camry, 2023" required>
+              </div>
+              <div class="field">
+                <label for="oVin">VIN (если известен)</label>
+                <input class="field__input" id="oVin" name="vin" maxlength="17" placeholder="17 символов" autocapitalize="characters">
+              </div>
+            </div>
+            <div class="field">
+              <label for="oPickup">Где забрать автомобиль</label>
+              <input class="field__input" id="oPickup" name="pickupAddress" maxlength="300" placeholder="Порт, СВХ, адрес продавца во Владивостоке">
+            </div>
+            <div class="field">
+              <label for="oComment">Комментарий</label>
+              <textarea class="field__input" id="oComment" name="comment" maxlength="1000" rows="3" placeholder="Пожелания по срокам, контакт получателя и т.п."></textarea>
+            </div>
+          </form>
+
+          <aside class="calc__result">
+            <p class="calc__label">Итого к оплате</p>
+            <p class="calc__price"><span id="oPrice">—</span>&nbsp;₽</p>
+            <dl class="calc__details">
+              <div><dt>Маршрут</dt><dd id="oRoute">—</dd></div>
+              <div><dt>Срок в пути</dt><dd id="oDays">—</dd></div>
+              <div><dt>Расстояние</dt><dd id="oKm">—</dd></div>
+              <div><dt>Страховка</dt><dd>включена</dd></div>
+            </dl>
+            <button type="submit" form="orderForm" class="btn btn--dark btn--block">Создать заказ <span class="arrow">→</span></button>
+            <p class="form-status" id="orderStatus" role="status"></p>
+          </aside>
+        </div>
+      </div>
+
+      <!-- LEADS (manager) -->
+      <div class="view" data-view="leads" hidden>
+        <div class="view__head">
+          <div>
+            <h1 class="view__title">Заявки с сайта</h1>
+            <p class="view__sub">Обратные звонки из формы на главной странице</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="leadsTable">
+            <thead><tr><th>Дата</th><th>Имя</th><th>Телефон</th><th>Направление</th><th>Оценка</th><th>Обработана</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="view" data-view="profile" hidden>
+        <div class="view__head">
+          <div>
+            <h1 class="view__title">Профиль</h1>
+            <p class="view__sub" id="profileSince"></p>
+          </div>
+        </div>
+        <div class="profile">
+          <form class="panel acc-form acc-form--light" id="profileForm" novalidate>
+            <h3>Личные данные</h3>
+            <div class="field">
+              <label for="pEmail">Email</label>
+              <input class="field__input" id="pEmail" disabled>
+            </div>
+            <div class="field">
+              <label for="pName">Имя</label>
+              <input class="field__input" id="pName" name="name" maxlength="100" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="pPhone">Телефон</label>
+              <input class="field__input" id="pPhone" name="phone" type="tel" required autocomplete="tel" data-phone>
+            </div>
+            <button type="submit" class="btn btn--dark">Сохранить</button>
+            <p class="form-status" role="status"></p>
+          </form>
+
+          <form class="panel acc-form acc-form--light" id="passwordForm" novalidate>
+            <h3>Смена пароля</h3>
+            <div class="field">
+              <label for="pCur">Текущий пароль</label>
+              <input class="field__input" id="pCur" name="current" type="password" autocomplete="current-password" required>
+            </div>
+            <div class="field">
+              <label for="pNext">Новый пароль</label>
+              <input class="field__input" id="pNext" name="next" type="password" autocomplete="new-password" minlength="8" required>
+            </div>
+            <button type="submit" class="btn btn--outline-dark">Обновить пароль</button>
+            <p class="form-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="tariffs.js"></script>
+<script src="account.js"></script>
+</body>
+</html>
