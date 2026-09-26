@@ -102,12 +102,11 @@
       <nav class="side-nav" id="sideNav" aria-label="Разделы кабинета">
         <a href="#orders" data-route="orders">Мои заказы</a>
         <a href="#new" data-route="new">Новый заказ</a>
-        <a href="#leads" data-route="leads" data-manager hidden>Заявки с сайта</a>
         <a href="#profile" data-route="profile">Профиль</a>
       </nav>
       <div class="side-help">
         <p>Личный менеджер</p>
-        <a href="tel:+79000000000">+7 (900) 000-00-00</a>
+        <a href="tel:+79000000000" data-set="phone">+7 (900) 000-00-00</a>
       </div>
     </aside>
 
@@ -120,19 +119,15 @@
             <h1 class="view__title" id="ordersTitle">Мои заказы</h1>
             <p class="view__sub" id="ordersSub">Все перевозки и их текущий статус</p>
           </div>
-          <a href="#new" class="btn btn--dark" data-client-only>+ Новый заказ</a>
+          <a href="#new" class="btn btn--dark">+ Новый заказ</a>
         </div>
-
-        <div class="stats" id="stats" hidden></div>
-
-        <div class="filters" id="statusFilter" data-manager hidden></div>
 
         <div class="orders" id="ordersList"></div>
         <div class="empty" id="ordersEmpty" hidden>
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 40h40V22H6zM46 28h8l6 8v4H46" /><circle cx="18" cy="44" r="5"/><circle cx="50" cy="44" r="5"/></svg>
           <h3>Заказов пока нет</h3>
           <p>Рассчитайте стоимость и оформите первую перевозку — это займёт минуту.</p>
-          <a href="#new" class="btn btn--dark" data-client-only>Оформить заказ</a>
+          <a href="#new" class="btn btn--dark">Оформить заказ</a>
         </div>
       </div>
 
@@ -209,22 +204,6 @@
         </div>
       </div>
 
-      <!-- LEADS (manager) -->
-      <div class="view" data-view="leads" hidden>
-        <div class="view__head">
-          <div>
-            <h1 class="view__title">Заявки с сайта</h1>
-            <p class="view__sub">Обратные звонки из формы на главной странице</p>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="table" id="leadsTable">
-            <thead><tr><th>Дата</th><th>Имя</th><th>Телефон</th><th>Направление</th><th>Оценка</th><th>Обработана</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
       <!-- PROFILE -->
       <div class="view" data-view="profile" hidden>
         <div class="view__head">
@@ -275,6 +254,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="tariffs.js"></script>
+<script src="site.js"></script>
 <script src="account.js"></script>
 </body>
 </html>

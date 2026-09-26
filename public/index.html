@@ -33,7 +33,7 @@
     </nav>
 
     <div class="header__actions">
-      <a class="header__phone" href="tel:+79000000000">+7 (900) 000-00-00</a>
+      <a class="header__phone" href="tel:+79000000000" data-set="phone">+7 (900) 000-00-00</a>
       <a class="header__login" href="account.html" id="loginLink">Войти</a>
       <a class="btn btn--sm btn--light" href="#request">Заявка</a>
       <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
@@ -145,33 +145,12 @@
 
           <fieldset class="field">
             <legend>Тип автомобиля</legend>
-            <div class="chips" id="carType">
-              <label class="chip"><input type="radio" name="type" value="sedan" checked><span>Седан / хэтчбек</span></label>
-              <label class="chip"><input type="radio" name="type" value="crossover"><span>Кроссовер</span></label>
-              <label class="chip"><input type="radio" name="type" value="suv"><span>Внедорожник / минивэн</span></label>
-              <label class="chip"><input type="radio" name="type" value="van"><span>Микроавтобус</span></label>
-            </div>
+            <div class="chips" id="carType"></div>
           </fieldset>
 
-          <fieldset class="field">
+          <fieldset class="field" id="calcOptionsField">
             <legend>Опции</legend>
-            <div class="toggles">
-              <label class="toggle">
-                <input type="checkbox" name="opt" value="closed">
-                <span class="toggle__ui"></span>
-                <span><b>Закрытый автовоз</b><small>Для премиум и спорткаров</small></span>
-              </label>
-              <label class="toggle">
-                <input type="checkbox" name="opt" value="door">
-                <span class="toggle__ui"></span>
-                <span><b>Доставка до двери</b><small>Эвакуатор в городе получения</small></span>
-              </label>
-              <label class="toggle">
-                <input type="checkbox" name="opt" value="port">
-                <span class="toggle__ui"></span>
-                <span><b>Забор из порта / СВХ</b><small>Получим авто за вас</small></span>
-              </label>
-            </div>
+            <div class="toggles" id="calcOptions"></div>
           </fieldset>
         </form>
 
@@ -343,7 +322,7 @@
       <div class="section__head section__head--stack">
         <h2 class="section__title">Частые<br>вопросы</h2>
         <p class="section__lead">Не нашли ответ? Позвоните — объясним на пальцах.</p>
-        <a href="tel:+79000000000" class="btn btn--dark">+7 (900) 000-00-00</a>
+        <a href="tel:+79000000000" class="btn btn--dark" data-set="phone">+7 (900) 000-00-00</a>
       </div>
 
       <div class="faq">
@@ -425,19 +404,19 @@
     <div class="footer__grid">
       <div>
         <h4>Контакты</h4>
-        <a href="tel:+79000000000">+7 (900) 000-00-00</a>
-        <a href="mailto:info@example.com">info@example.com</a>
+        <a href="tel:+79000000000" data-set="phone">+7 (900) 000-00-00</a>
+        <a href="mailto:info@example.com" data-set="email">info@example.com</a>
       </div>
       <div>
         <h4>Офис и площадка</h4>
-        <p>г. Владивосток,<br>ул. Примерная, 1</p>
-        <p>Ежедневно 08:00–20:00 (Влд)</p>
+        <p data-set="address">г. Владивосток, ул. Примерная, 1</p>
+        <p data-set="hours">Ежедневно 08:00–20:00 (Влд)</p>
       </div>
-      <div>
+      <div data-messengers>
         <h4>Мессенджеры</h4>
-        <a href="#">Telegram</a>
-        <a href="#">WhatsApp</a>
-        <a href="#">VK</a>
+        <a href="#" data-link="telegram" target="_blank" rel="noopener">Telegram</a>
+        <a href="#" data-link="whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="#" data-link="vk" target="_blank" rel="noopener">VK</a>
       </div>
       <div>
         <h4>Разделы</h4>
@@ -457,6 +436,7 @@
 <a href="#request" class="fab" aria-label="Оставить заявку">Заявка →</a>
 
 <script src="tariffs.js"></script>
+<script src="site.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

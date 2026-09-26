@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ-панель — Карго Экспресс</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="adm is-loading">
+
+<!-- ========== ВХОД ========== -->
+<main class="adm-login" id="loginView" hidden>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <form class="auth__card adm-login__card acc-form" id="loginForm" novalidate>
+    <a href="./" class="logo">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 20h16M10 14h12M12 8h8" stroke="var(--logo-stroke)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+      <span class="logo__text">КАРГО<b>ЭКСПРЕСС</b></span>
+    </a>
+    <h1 class="adm-login__title">Админ-панель</h1>
+    <p class="adm-login__sub">Вход для сотрудников</p>
+    <div class="input">
+      <input type="email" id="lEmail" name="email" placeholder=" " autocomplete="username" required>
+      <label for="lEmail">Email</label>
+    </div>
+    <div class="input">
+      <input type="password" id="lPass" name="password" placeholder=" " autocomplete="current-password" required>
+      <label for="lPass">Пароль</label>
+    </div>
+    <button type="submit" class="btn btn--light btn--block btn--lg">Войти <span class="arrow">→</span></button>
+    <p class="form-status" role="status"></p>
+  </form>
+</main>
+
+<!-- ========== ПАНЕЛЬ ========== -->
+<div class="adm-shell" id="appView" hidden>
+  <aside class="adm-side" id="side">
+    <a href="./" class="logo adm-side__logo" aria-label="На сайт">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 20h16M10 14h12M12 8h8" stroke="var(--logo-stroke)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+      <span class="logo__text">КАРГО<b>ЭКСПРЕСС</b></span>
+    </a>
+    <nav class="adm-nav" id="admNav" aria-label="Разделы"></nav>
+    <div class="adm-side__user">
+      <span class="acc-user__avatar" id="meAvatar"></span>
+      <span class="adm-side__me"><b id="meName"></b><small id="meRole"></small></span>
+      <button class="adm-icon-btn" id="logoutBtn" title="Выйти" aria-label="Выйти">
+        <svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>
+      </button>
+    </div>
+  </aside>
+  <div class="adm-backdrop" id="backdrop"></div>
+
+  <div class="adm-main">
+    <header class="adm-top">
+      <button class="adm-icon-btn adm-top__menu" id="menuBtn" aria-label="Меню">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="adm-top__titles">
+        <p class="adm-top__crumb" id="crumb"></p>
+        <h1 class="adm-top__title" id="pageTitle">Загрузка…</h1>
+      </div>
+      <div class="adm-top__actions" id="pageActions"></div>
+    </header>
+    <main class="adm-content" id="content"></main>
+  </div>
+</div>
+
+<dialog class="adm-dialog" id="dialog">
+  <form method="dialog" class="adm-dialog__box" id="dialogForm" novalidate>
+    <header class="adm-dialog__head">
+      <h2 id="dialogTitle"></h2>
+      <button type="button" class="adm-icon-btn" id="dialogClose" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="adm-dialog__body" id="dialogBody"></div>
+    <p class="form-status" id="dialogStatus" role="status"></p>
+    <footer class="adm-dialog__foot">
+      <button type="button" class="btn btn--outline-dark" id="dialogCancel">Отмена</button>
+      <button type="submit" class="btn btn--dark" id="dialogOk">Сохранить</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="adm-tip" id="tip" role="tooltip" hidden></div>
+
+<script src="tariffs.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

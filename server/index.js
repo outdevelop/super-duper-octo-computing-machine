@@ -5,12 +5,15 @@ const express = require('express');
 const { open } = require('./db');
 const { createAuth } = require('./auth');
 const { createApi } = require('./api');
+const { createAdminApi } = require('./admin');
+const { createStore } = require('./store');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
 function createApp({ db, secureCookies = process.env.NODE_ENV === 'production', trustProxy = process.env.TRUST_PROXY } = {}) {
   const app = express();
   const auth = createAuth(db, { secureCookies });
+  const store = createStore(db);
 
   app.disable('x-powered-by');
   if (trustProxy) app.set('trust proxy', trustProxy === 'true' ? true : trustProxy);
@@ -35,9 +38,12 @@ function createApp({ db, secureCookies = process.env.NODE_ENV === 'production', 
 
   // Защита от CSRF: изменяющие запросы к API принимаются только как JSON
   // и только с того же origin (браузер не отправит такой запрос с чужого сайта без CORS).
+  // Запросы без тела (выход, отмена, удаление) пропускаются: HTML-форма всегда
+  // отправляет тело с form-типом, а кросс-доменный fetch отсекает проверка Origin.
   app.use('/api', (req, res, next) => {
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
-    if (!req.is('application/json')) return res.status(415).json({ error: 'Ожидается application/json' });
+    const hasBody = req.headers['content-type'] !== undefined || Number(req.headers['content-length'] || 0) > 0;
+    if (hasBody && !req.is('application/json')) return res.status(415).json({ error: 'Ожидается application/json' });
     const origin = req.headers.origin;
     if (origin && origin !== `${req.protocol}://${req.headers.host}`) {
       return res.status(403).json({ error: 'Недопустимый источник запроса' });
@@ -45,7 +51,10 @@ function createApp({ db, secureCookies = process.env.NODE_ENV === 'production', 
     next();
   });
 
-  app.use('/api', express.json({ limit: '20kb' }), auth.loadUser, createApi(db, auth));
+  app.use('/api', express.json({ limit: '200kb' }), auth.loadUser);
+  app.use('/api/admin', createAdminApi(db, auth, store));
+  app.use('/api', createApi(db, auth, store));
+  app.use('/api', (req, res) => res.status(404).json({ error: 'Не найдено' }));
 
   app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 

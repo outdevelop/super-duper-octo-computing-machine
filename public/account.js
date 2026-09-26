@@ -6,7 +6,8 @@
   var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
   var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
 
-  var state = { user: null, orders: [], filter: '' };
+  var state = { user: null, orders: [] };
+  var tariffs = T.DEFAULTS;
 
   /* ---------- Утилиты ---------- */
 
@@ -23,6 +24,12 @@
     var opts = { day: 'numeric', month: 'short', year: 'numeric' };
     if (withTime) { opts.hour = '2-digit'; opts.minute = '2-digit'; }
     return d.toLocaleString('ru-RU', opts);
+  }
+
+  // Дата без времени «2026-10-05» → «5 окт. 2026 г.».
+  function formatDay(value) {
+    var d = new Date(value + 'T00:00:00');
+    return isNaN(d) ? esc(value) : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   function api(method, url, body) {
@@ -76,7 +83,6 @@
     });
   }
 
-  function isManager() { return state.user && state.user.role === 'manager'; }
 
   /* ---------- Маска телефона ---------- */
 
@@ -160,6 +166,11 @@
   }
 
   function onLogin(user) {
+    // Сотрудники работают в админ-панели.
+    if (user.role === 'manager' || user.role === 'admin') {
+      location.replace('admin.html');
+      return;
+    }
     state.user = user;
     document.body.classList.remove('is-loading');
     $('#authView').hidden = true;
@@ -167,15 +178,6 @@
     $('#accUser').hidden = false;
     $('#logoutBtn').hidden = false;
     renderUser();
-
-    var manager = isManager();
-    $$('[data-manager]').forEach(function (el) { el.hidden = !manager; });
-    $$('[data-client-only]').forEach(function (el) { el.hidden = manager; });
-    $('[data-route="orders"]').textContent = manager ? 'Все заказы' : 'Мои заказы';
-    $('[data-route="new"]').hidden = manager;
-    $('#ordersTitle').textContent = manager ? 'Все заказы' : 'Мои заказы';
-    $('#ordersSub').textContent = manager ? 'Управление перевозками и статусами' : 'Все перевозки и их текущий статус';
-
     route();
   }
 
@@ -186,7 +188,7 @@
     $('#pEmail').value = u.email;
     $('#pName').value = u.name;
     $('#pPhone').value = u.phone;
-    $('#profileSince').textContent = (u.role === 'manager' ? 'Менеджер' : 'Клиент') + ' с ' + formatDate(u.createdAt);
+    $('#profileSince').textContent = 'Клиент с ' + formatDate(u.createdAt);
   }
 
   /* ---------- Роутинг по hash ---------- */
@@ -195,8 +197,6 @@
     if (!state.user) return;
     var hash = location.hash.replace(/^#/, '') || 'orders';
     var name = hash.split('/')[0];
-    if (name === 'new' && isManager()) name = 'orders';
-    if (name === 'leads' && !isManager()) name = 'orders';
     if (!$('[data-view="' + name + '"]')) name = 'orders';
 
     $$('.view').forEach(function (v) { v.hidden = v.dataset.view !== name; });
@@ -206,7 +206,6 @@
 
     if (name === 'orders') loadOrders();
     if (name === 'order') loadOrder(hash.split('/')[1]);
-    if (name === 'leads') loadLeads();
     if (name === 'new') updateQuote();
     window.scrollTo(0, 0);
   }
@@ -215,24 +214,21 @@
   /* ---------- Список заказов ---------- */
 
   function loadOrders() {
-    var url = '/orders' + (isManager() && state.filter ? '?status=' + encodeURIComponent(state.filter) : '');
-    api('GET', url).then(function (res) {
+    api('GET', '/orders').then(function (res) {
       state.orders = res.orders;
       renderOrders();
     }).catch(handleError);
-    if (isManager()) loadStats();
   }
 
   function renderOrders() {
     var list = $('#ordersList');
     $('#ordersEmpty').hidden = state.orders.length > 0;
     list.innerHTML = state.orders.map(function (o) {
-      var type = T.CAR_TYPES[o.carType];
       return '<a class="order-row" href="#order/' + o.id + '">' +
         '<span class="order-row__num">' + esc(o.number) + '<small>' + formatDate(o.createdAt) + '</small></span>' +
         '<span class="order-row__route"><b>' + esc(o.origin) + ' → ' + esc(o.city) + '</b>' +
-          '<span>' + (o.client ? esc(o.client.name) + ' · ' + esc(o.client.phone) : fmt.format(o.km) + ' км · ' + o.days[0] + '–' + o.days[1] + ' дн.') + '</span></span>' +
-        '<span class="order-row__car"><b>' + esc(o.carModel) + '</b><span>' + esc(type ? type.label : o.carType) + '</span></span>' +
+          '<span>' + fmt.format(o.km) + ' км · ' + o.days[0] + '–' + o.days[1] + ' дн.</span></span>' +
+        '<span class="order-row__car"><b>' + esc(o.carModel) + '</b><span>' + esc(o.carTypeLabel) + '</span></span>' +
         badge(o.status) +
         '<span class="order-row__price">' + fmt.format(o.price) + ' ₽</span>' +
       '</a>';
@@ -241,35 +237,6 @@
 
   function badge(status) {
     return '<span class="badge badge--' + esc(status) + '">' + esc(T.STATUSES[status] || status) + '</span>';
-  }
-
-  function renderFilters() {
-    var box = $('#statusFilter');
-    var items = [['', 'Все']].concat(Object.keys(T.STATUSES).map(function (k) { return [k, T.STATUSES[k]]; }));
-    box.innerHTML = items.map(function (it) {
-      return '<button type="button" data-status="' + it[0] + '"' + (it[0] === state.filter ? ' class="is-active"' : '') + '>' + esc(it[1]) + '</button>';
-    }).join('');
-  }
-  $('#statusFilter').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-status]');
-    if (!btn) return;
-    state.filter = btn.dataset.status;
-    renderFilters();
-    loadOrders();
-  });
-  renderFilters();
-
-  function loadStats() {
-    api('GET', '/stats').then(function (res) {
-      var s = res.stats;
-      var box = $('#stats');
-      box.hidden = false;
-      box.innerHTML =
-        '<div class="stat stat--dark"><b>' + fmt.format(s.active) + '</b><span>в работе</span></div>' +
-        '<div class="stat"><b>' + fmt.format(s.orders) + '</b><span>всего заказов</span></div>' +
-        '<div class="stat"><b>' + fmt.format(s.clients) + '</b><span>клиентов</span></div>' +
-        '<a class="stat" href="#leads"><b>' + fmt.format(s.newLeads) + '</b><span>новых заявок с сайта</span></a>';
-    }).catch(function () {});
   }
 
   /* ---------- Карточка заказа ---------- */
@@ -292,8 +259,7 @@
       return '<span' + (!cancelled && i <= flowIndex ? ' class="is-done"' : '') + '></span>';
     }).join('');
     var truckPos = cancelled ? 0 : Math.max(0, flowIndex) / (T.STATUS_FLOW.length - 1) * 100;
-    var type = T.CAR_TYPES[o.carType];
-    var opts = o.options.map(function (k) { return T.OPTIONS[k] ? T.OPTIONS[k].label : k; });
+    var opts = o.optionLabels;
 
     var events = o.events.map(function (ev) {
       return '<li><b>' + esc(T.STATUSES[ev.status] || ev.status) + '</b>' +
@@ -302,30 +268,15 @@
     }).join('');
 
     var actions = '';
-    if (isManager()) {
-      actions =
-        '<form class="panel acc-form acc-form--light" id="statusForm">' +
-          '<h3>Изменить статус</h3>' +
-          '<select class="select" name="status">' + Object.keys(T.STATUSES).map(function (k) {
-            return '<option value="' + k + '"' + (k === o.status ? ' selected' : '') + '>' + esc(T.STATUSES[k]) + '</option>';
-          }).join('') + '</select>' +
-          '<textarea class="field__input" name="note" rows="2" maxlength="500" placeholder="Комментарий для клиента (необязательно)"></textarea>' +
-          '<button type="submit" class="btn btn--dark">Сохранить статус</button>' +
-          '<p class="form-status" role="status"></p>' +
-        '</form>';
-    } else if (o.status === 'new') {
+    if (o.status === 'new') {
       actions = '<div class="panel"><h3>Заявка ещё не подтверждена</h3>' +
         '<p class="view__sub">Менеджер свяжется с вами, чтобы подписать договор. Пока заявка новая, её можно отменить.</p>' +
         '<button class="btn btn--outline-dark panel__action" id="cancelOrder">Отменить заявку</button></div>';
     }
 
-    var client = o.client
-      ? '<div class="panel"><h3>Клиент</h3><dl class="kv">' +
-          '<div><dt>Имя</dt><dd>' + esc(o.client.name) + '</dd></div>' +
-          '<div><dt>Телефон</dt><dd><a href="tel:' + esc(o.client.phone.replace(/[^\d+]/g, '')) + '">' + esc(o.client.phone) + '</a></dd></div>' +
-          '<div><dt>Email</dt><dd><a href="mailto:' + esc(o.client.email) + '">' + esc(o.client.email) + '</a></dd></div>' +
-        '</dl></div>'
-      : '';
+    var paid = o.paymentStatus === 'paid' ? 'Оплачен полностью'
+      : o.paymentStatus === 'prepaid' ? 'Предоплата ' + fmt.format(o.paidAmount) + ' ₽, остаток ' + fmt.format(Math.max(o.price - o.paidAmount, 0)) + ' ₽'
+      : 'Оплата после осмотра при выдаче';
 
     $('#orderDetails').innerHTML =
       '<div class="detail">' +
@@ -338,11 +289,12 @@
               '<div class="ta-r"><small>Куда</small><b>' + esc(o.city) + '</b></div>' +
             '</div>' +
             '<div class="progress">' + progress + '</div>' +
-            '<div class="detail__meta"><span>' + fmt.format(o.km) + ' км</span><span>Срок: ' + o.days[0] + '–' + o.days[1] + ' дн.</span></div>' +
+            '<div class="detail__meta"><span>' + fmt.format(o.km) + ' км</span><span>' +
+              (o.eta ? 'Прибытие: ' + formatDay(o.eta) : 'Срок: ' + o.days[0] + '–' + o.days[1] + ' дн.') + '</span></div>' +
           '</div>' +
           '<div class="panel"><h3>Автомобиль и детали</h3><dl class="kv">' +
             '<div><dt>Марка и модель</dt><dd>' + esc(o.carModel) + '</dd></div>' +
-            '<div><dt>Тип</dt><dd>' + esc(type ? type.label : o.carType) + '</dd></div>' +
+            '<div><dt>Тип</dt><dd>' + esc(o.carTypeLabel) + '</dd></div>' +
             (o.vin ? '<div><dt>VIN</dt><dd>' + esc(o.vin) + '</dd></div>' : '') +
             '<div><dt>Опции</dt><dd>' + (opts.length ? esc(opts.join(', ')) : 'нет') + '</dd></div>' +
             (o.pickupAddress ? '<div><dt>Забрать</dt><dd>' + esc(o.pickupAddress) + '</dd></div>' : '') +
@@ -352,8 +304,7 @@
         '</div>' +
         '<div>' +
           '<div class="panel"><h3>Стоимость</h3><p class="detail__price">' + fmt.format(o.price) + ' ₽</p>' +
-            '<p class="view__sub">Страховка включена. Оплата остатка — после осмотра при выдаче.</p></div>' +
-          client +
+            '<p class="view__sub">Страховка включена. ' + esc(paid) + '.</p></div>' +
           '<div class="panel"><h3>История</h3><ol class="timeline">' + events + '</ol></div>' +
           actions +
         '</div>' +
@@ -362,24 +313,6 @@
     // Позицию точки ставим через CSSOM, а не inline-стилем (CSP запрещает style="...").
     var dot = $('.detail__line span');
     if (dot) dot.style.left = dot.dataset.pos + '%';
-
-    var statusForm = $('#statusForm');
-    if (statusForm) {
-      statusForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        busy(statusForm, true);
-        api('PATCH', '/orders/' + o.id + '/status', {
-          status: $('select', statusForm).value,
-          note: $('textarea', statusForm).value
-        }).then(function (res) {
-          renderOrder(res.order);
-          toast('Статус обновлён');
-        }).catch(function (err) {
-          setStatus(statusForm, err.message, 'error');
-          busy(statusForm, false);
-        });
-      });
-    }
 
     var cancelBtn = $('#cancelOrder');
     if (cancelBtn) {
@@ -402,36 +335,48 @@
   var orderForm = $('#orderForm');
   var citySelect = $('#oCity');
 
-  T.CITIES.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); }).forEach(function (c) {
-    var opt = document.createElement('option');
-    opt.value = c.name;
-    opt.textContent = c.name;
-    citySelect.appendChild(opt);
-  });
-  citySelect.value = 'Москва';
+  function renderOrderForm() {
+    var prev = orderForm.querySelector('input[name="carType"]') ? currentSelection() : null;
+    citySelect.innerHTML = '';
+    tariffs.cities.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); }).forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c.name;
+      opt.textContent = c.name;
+      citySelect.appendChild(opt);
+    });
+    citySelect.value = prev && T.findCity(tariffs, prev.city) ? prev.city : (T.findCity(tariffs, 'Москва') ? 'Москва' : tariffs.cities[0].name);
 
-  $('#oTypes').innerHTML = Object.keys(T.CAR_TYPES).map(function (k, i) {
-    return '<label class="chip"><input type="radio" name="carType" value="' + k + '"' + (i === 0 ? ' checked' : '') + '>' +
-      '<span>' + esc(T.CAR_TYPES[k].label) + '</span></label>';
-  }).join('');
+    $('#oTypes').innerHTML = tariffs.carTypes.map(function (t, i) {
+      var checked = prev && T.findCarType(tariffs, prev.carType) ? t.key === prev.carType : i === 0;
+      return '<label class="chip"><input type="radio" name="carType" value="' + esc(t.key) + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + esc(t.label) + '</span></label>';
+    }).join('');
 
-  $('#oOptions').innerHTML = Object.keys(T.OPTIONS).map(function (k) {
-    var o = T.OPTIONS[k];
-    return '<label class="toggle"><input type="checkbox" name="opt" value="' + k + '"><span class="toggle__ui"></span>' +
-      '<span><b>' + esc(o.label) + '</b><small>' + esc(o.hint) + '</small></span></label>';
-  }).join('');
+    $('#oOptions').innerHTML = tariffs.options.map(function (o) {
+      var checked = prev && prev.options.indexOf(o.key) >= 0;
+      return '<label class="toggle"><input type="checkbox" name="opt" value="' + esc(o.key) + '"' + (checked ? ' checked' : '') + '>' +
+        '<span class="toggle__ui"></span><span><b>' + esc(o.label) + '</b>' + (o.hint ? '<small>' + esc(o.hint) + '</small>' : '') + '</span></label>';
+    }).join('');
+    $('#oOptions').closest('fieldset').hidden = !tariffs.options.length;
+  }
 
   // Предзаполнение из калькулятора на главной: account.html?city=…&type=…&opts=a,b#new
-  (function prefill() {
-    var params = new URLSearchParams(location.search);
-    if (params.get('city') && T.findCity(params.get('city'))) citySelect.value = params.get('city');
-    var type = params.get('type');
-    if (type && T.CAR_TYPES[type]) $('input[name="carType"][value="' + type + '"]', orderForm).checked = true;
-    (params.get('opts') || '').split(',').forEach(function (k) {
-      if (T.OPTIONS[k]) $('input[name="opt"][value="' + k + '"]', orderForm).checked = true;
-    });
-    if (location.search) history.replaceState(null, '', location.pathname + location.hash);
-  })();
+  var params = new URLSearchParams(location.search);
+  if (location.search) history.replaceState(null, '', location.pathname + location.hash);
+  function prefill() {
+    if (params.get('city') && T.findCity(tariffs, params.get('city'))) citySelect.value = params.get('city');
+    $$('input[name="carType"]', orderForm).forEach(function (i) { if (i.value === params.get('type')) i.checked = true; });
+    var opts = (params.get('opts') || '').split(',');
+    $$('input[name="opt"]', orderForm).forEach(function (i) { if (opts.indexOf(i.value) >= 0) i.checked = true; });
+  }
+
+  function applyTariffs(data) {
+    if (!data || !data.cities || !data.cities.length || !data.carTypes || !data.carTypes.length) return;
+    tariffs = data;
+    renderOrderForm();
+    prefill();
+    updateQuote();
+  }
 
   function currentSelection() {
     return {
@@ -443,7 +388,7 @@
 
   function updateQuote() {
     var sel = currentSelection();
-    var q = T.quote(sel.city, sel.carType, sel.options);
+    var q = T.quote(tariffs, sel.city, sel.carType, sel.options);
     if (!q) return;
     $('#oPrice').textContent = fmt.format(q.price);
     $('#oRoute').textContent = T.ORIGIN + ' → ' + sel.city;
@@ -483,38 +428,6 @@
       if (err.status === 401) return handleError(err);
       setStatus(orderForm, err.message, 'error');
     }).then(function () { busy(orderForm, false); });
-  });
-
-  /* ---------- Заявки с сайта (менеджер) ---------- */
-
-  function loadLeads() {
-    api('GET', '/leads').then(function (res) {
-      var body = $('#leadsTable tbody');
-      if (!res.leads.length) {
-        body.innerHTML = '<tr><td colspan="6">Заявок пока нет</td></tr>';
-        return;
-      }
-      body.innerHTML = res.leads.map(function (l) {
-        return '<tr' + (l.processed ? ' class="is-done"' : '') + '>' +
-          '<td>' + formatDate(l.createdAt, true) + '</td>' +
-          '<td>' + esc(l.name) + '</td>' +
-          '<td><a href="tel:' + esc(l.phone.replace(/[^\d+]/g, '')) + '">' + esc(l.phone) + '</a></td>' +
-          '<td>' + esc(l.route) + '</td>' +
-          '<td>' + esc(l.estimate) + '</td>' +
-          '<td><input type="checkbox" data-lead="' + l.id + '"' + (l.processed ? ' checked' : '') + ' aria-label="Обработана"></td>' +
-        '</tr>';
-      }).join('');
-    }).catch(handleError);
-  }
-  $('#leadsTable').addEventListener('change', function (e) {
-    var box = e.target.closest('input[data-lead]');
-    if (!box) return;
-    api('PATCH', '/leads/' + box.dataset.lead, { processed: box.checked }).then(function () {
-      box.closest('tr').classList.toggle('is-done', box.checked);
-    }).catch(function (err) {
-      box.checked = !box.checked;
-      toast(err.message);
-    });
   });
 
   /* ---------- Профиль ---------- */
@@ -557,7 +470,9 @@
     toast(err.message);
   }
 
-  updateQuote();
+  applyTariffs(T.DEFAULTS);
+  api('GET', '/tariffs').then(applyTariffs).catch(function () {});
+
   api('GET', '/me')
     .then(function (res) { onLogin(res.user); })
     .catch(function (err) {

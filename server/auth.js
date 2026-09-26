@@ -49,9 +49,10 @@ function createAuth(db, { secureCookies = false } = {}) {
     findSession: db.prepare(`
       SELECT u.id, u.email, u.name, u.phone, u.role, u.created_at, s.expires_at
       FROM sessions s JOIN users u ON u.id = s.user_id
-      WHERE s.token_hash = ?`),
+      WHERE s.token_hash = ? AND u.blocked = 0`),
     deleteSession: db.prepare('DELETE FROM sessions WHERE token_hash = ?'),
     deleteUserSessions: db.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash != ?'),
+    deleteAllUserSessions: db.prepare('DELETE FROM sessions WHERE user_id = ?'),
     purgeExpired: db.prepare('DELETE FROM sessions WHERE expires_at < ?')
   };
 
@@ -80,6 +81,11 @@ function createAuth(db, { secureCookies = false } = {}) {
     stmt.deleteUserSessions.run(userId, sha256(token));
   }
 
+  // Завершает все сессии пользователя (блокировка, смена пароля администратором).
+  function endAllSessions(userId) {
+    stmt.deleteAllUserSessions.run(userId);
+  }
+
   // Middleware: кладёт пользователя в req.user (или null).
   function loadUser(req, res, next) {
     req.user = null;
@@ -102,16 +108,20 @@ function createAuth(db, { secureCookies = false } = {}) {
     next();
   }
 
-  function requireManager(req, res, next) {
-    if (!req.user) return res.status(401).json({ error: 'Требуется вход в аккаунт' });
-    if (req.user.role !== 'manager') return res.status(403).json({ error: 'Недостаточно прав' });
-    next();
+  function requireRole(...roles) {
+    return (req, res, next) => {
+      if (!req.user) return res.status(401).json({ error: 'Требуется вход в аккаунт' });
+      if (!roles.includes(req.user.role)) return res.status(403).json({ error: 'Недостаточно прав' });
+      next();
+    };
   }
+  const requireStaff = requireRole('manager', 'admin');
+  const requireAdmin = requireRole('admin');
 
   const timer = setInterval(() => stmt.purgeExpired.run(Date.now()), 60 * 60 * 1000);
   timer.unref();
 
-  return { startSession, endSession, endOtherSessions, loadUser, requireUser, requireManager };
+  return { startSession, endSession, endOtherSessions, endAllSessions, loadUser, requireUser, requireStaff, requireAdmin };
 }
 
 // Простой лимитер попыток в памяти: не более `max` событий за `windowMs` на ключ.

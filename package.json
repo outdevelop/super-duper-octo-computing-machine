@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node --no-warnings server/index.js",
     "dev": "node --no-warnings --watch server/index.js",
-    "create-manager": "node --no-warnings scripts/create-manager.js",
+    "create-admin": "node --no-warnings scripts/create-staff.js admin",
+    "create-manager": "node --no-warnings scripts/create-staff.js manager",
     "test": "node --no-warnings --test test/*.test.js"
   },
   "dependencies": {

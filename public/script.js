@@ -2,7 +2,7 @@
   'use strict';
 
   var T = window.TARIFFS;
-  var CITIES = T.CITIES;
+  var tariffs = T.DEFAULTS;
 
   var ROUTES_VISIBLE = 8;
 
@@ -86,18 +86,16 @@
   /* ---------- Calculator ---------- */
   var form = $('#calcForm');
   var citySelect = $('#city');
+  var typeBox = $('#carType');
+  var optionBox = $('#calcOptions');
   var priceEl = $('#price');
   var daysEl = $('#days');
   var distEl = $('#distance');
+  var calcCta = $('#calcCta');
 
-  CITIES.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); })
-    .forEach(function (c) {
-      var opt = document.createElement('option');
-      opt.value = c.name;
-      opt.textContent = c.name;
-      citySelect.appendChild(opt);
-    });
-  citySelect.value = 'Москва';
+  function esc(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
   var shownPrice = 0;
   function animatePrice(to) {
@@ -113,12 +111,40 @@
     })(start);
   }
 
-  var calcCta = $('#calcCta');
+  function renderCalculator() {
+    var prevCity = citySelect.value || 'Москва';
+    var prevType = ($('input[name="type"]:checked', form) || {}).value;
+    var prevOpts = $$('input[name="opt"]:checked', form).map(function (i) { return i.value; });
+
+    citySelect.innerHTML = '';
+    tariffs.cities.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); })
+      .forEach(function (c) {
+        var opt = document.createElement('option');
+        opt.value = c.name;
+        opt.textContent = c.name;
+        citySelect.appendChild(opt);
+      });
+    citySelect.value = T.findCity(tariffs, prevCity) ? prevCity : tariffs.cities[0].name;
+
+    typeBox.innerHTML = tariffs.carTypes.map(function (t, i) {
+      var checked = prevType ? t.key === prevType : i === 0;
+      return '<label class="chip"><input type="radio" name="type" value="' + esc(t.key) + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + esc(t.label) + '</span></label>';
+    }).join('');
+    if (!$('input[name="type"]:checked', form)) $('input[name="type"]', form).checked = true;
+
+    optionBox.innerHTML = tariffs.options.map(function (o) {
+      return '<label class="toggle"><input type="checkbox" name="opt" value="' + esc(o.key) + '"' +
+        (prevOpts.indexOf(o.key) >= 0 ? ' checked' : '') + '><span class="toggle__ui"></span>' +
+        '<span><b>' + esc(o.label) + '</b>' + (o.hint ? '<small>' + esc(o.hint) + '</small>' : '') + '</span></label>';
+    }).join('');
+    $('#calcOptionsField').hidden = !tariffs.options.length;
+  }
 
   function calculate() {
     var type = $('input[name="type"]:checked', form).value;
     var opts = $$('input[name="opt"]:checked', form).map(function (i) { return i.value; });
-    var q = T.quote(citySelect.value, type, opts);
+    var q = T.quote(tariffs, citySelect.value, type, opts);
     if (!q) return;
 
     animatePrice(q.price);
@@ -135,38 +161,40 @@
     }
   }
   form.addEventListener('change', calculate);
-  calculate();
 
   /* ---------- Routes table ---------- */
+  var ROUTES_VISIBLE = 8;
   var table = $('#routesTable');
   var more = $('#routesMore');
 
-  CITIES.forEach(function (c, i) {
-    var row = document.createElement('div');
-    row.className = 'routes__row' + (i >= ROUTES_VISIBLE ? ' is-hidden' : '');
-    row.setAttribute('role', 'row');
-    row.tabIndex = 0;
-    row.innerHTML =
-      '<span class="routes__city" role="cell"></span>' +
-      '<span role="cell">' + fmt.format(c.km) + ' км</span>' +
-      '<span role="cell">' + c.days[0] + '–' + c.days[1] + ' дней</span>' +
-      '<span class="routes__price" role="cell">' + fmt.format(c.price) + ' ₽</span>' +
-      '<span class="routes__arrow" aria-hidden="true">→</span>';
-    row.firstChild.textContent = c.name;
+  function renderRoutes() {
+    $$('.routes__row:not(.routes__row--head)', table).forEach(function (row) { row.remove(); });
+    var expanded = more.dataset.expanded === 'true';
+    tariffs.cities.forEach(function (c, i) {
+      var row = document.createElement('div');
+      row.className = 'routes__row' + (!expanded && i >= ROUTES_VISIBLE ? ' is-hidden' : '');
+      row.setAttribute('role', 'row');
+      row.tabIndex = 0;
+      row.innerHTML =
+        '<span class="routes__city" role="cell"></span>' +
+        '<span role="cell">' + fmt.format(c.km) + ' км</span>' +
+        '<span role="cell">' + c.days[0] + '–' + c.days[1] + ' дней</span>' +
+        '<span class="routes__price" role="cell">' + fmt.format(c.price) + ' ₽</span>' +
+        '<span class="routes__arrow" aria-hidden="true">→</span>';
+      row.firstChild.textContent = c.name;
 
-    function pick() {
-      citySelect.value = c.name;
-      calculate();
-      $('#calc').scrollIntoView({ behavior: 'smooth' });
-    }
-    row.addEventListener('click', pick);
-    row.addEventListener('keydown', function (e) { if (e.key === 'Enter') pick(); });
-    table.appendChild(row);
-  });
-
-  if (CITIES.length <= ROUTES_VISIBLE) {
-    more.hidden = true;
+      function pick() {
+        citySelect.value = c.name;
+        calculate();
+        $('#calc').scrollIntoView({ behavior: 'smooth' });
+      }
+      row.addEventListener('click', pick);
+      row.addEventListener('keydown', function (e) { if (e.key === 'Enter') pick(); });
+      table.appendChild(row);
+    });
+    more.hidden = tariffs.cities.length <= ROUTES_VISIBLE;
   }
+
   more.addEventListener('click', function () {
     var expanded = more.dataset.expanded === 'true';
     $$('.routes__row:not(.routes__row--head)', table).forEach(function (row, i) {
@@ -176,11 +204,29 @@
     more.textContent = expanded ? 'Показать все направления' : 'Свернуть';
   });
 
+  function applyTariffs(data) {
+    if (!data || !data.cities || !data.cities.length || !data.carTypes || !data.carTypes.length) return;
+    tariffs = data;
+    renderCalculator();
+    renderRoutes();
+    calculate();
+  }
+
+  // Сначала рисуем тарифы по умолчанию, чтобы страница не была пустой, затем — актуальные из админки.
+  applyTariffs(T.DEFAULTS);
+  fetch('/api/tariffs', { credentials: 'same-origin' })
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(applyTariffs)
+    .catch(function () {});
+
   /* ---------- Auth state in header ---------- */
   fetch('/api/me', { credentials: 'same-origin' })
     .then(function (res) { return res.ok ? res.json() : null; })
     .then(function (data) {
-      if (data && data.user) $('#loginLink').textContent = 'Кабинет';
+      if (!data || !data.user) return;
+      var staff = data.user.role === 'manager' || data.user.role === 'admin';
+      $('#loginLink').textContent = staff ? 'Админка' : 'Кабинет';
+      if (staff) $('#loginLink').href = 'admin.html';
     })
     .catch(function () {});
 
@@ -258,7 +304,7 @@
       $('#rRoute').dataset.touched = '';
       calculate();
     }).catch(function () {
-      status.textContent = 'Не удалось отправить. Позвоните нам: +7 (900) 000-00-00';
+      status.textContent = 'Не удалось отправить. Позвоните нам: ' + (window.SITE_SETTINGS ? window.SITE_SETTINGS.phone : '');
     }).then(function () {
       btn.disabled = false;
     });
