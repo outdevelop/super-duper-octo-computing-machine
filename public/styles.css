@@ -165,7 +165,7 @@ button { font: inherit; cursor: pointer; }
 .hero__visual { position: relative; color: var(--text); }
 .truck { width: 100%; margin-top: 40px; }
 .truck .road { animation: road 1.2s linear infinite; }
-@keyframes road { to { stroke-dashoffset: -26; } }
+@keyframes road { to { stroke-dashoffset: 26; } }
 
 .route-card {
   position: relative; z-index: 1;
@@ -202,10 +202,8 @@ button { font: inherit; cursor: pointer; }
 .section { padding: clamp(80px, 11vw, 140px) 0; position: relative; }
 .section--light { background: var(--light); color: var(--ink); }
 .section--dark-alt { background: var(--bg-2); }
-.section__head { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 24px; align-items: end; margin-bottom: clamp(40px, 6vw, 72px); }
+.section__head { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; margin-bottom: clamp(40px, 6vw, 72px); }
 .section__head--stack { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
-.section__num { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--accent); align-self: start; padding-top: 10px; }
-.section--light .section__num { color: var(--accent-deep); }
 .section__title { font-size: clamp(32px, 4.6vw, 64px); font-weight: 700; letter-spacing: -.035em; }
 .section__lead { max-width: 440px; color: var(--muted); font-size: 17px; justify-self: end; }
 .section--light .section__lead { color: var(--ink-muted); }
@@ -356,7 +354,6 @@ button { font: inherit; cursor: pointer; }
   pointer-events: none;
 }
 .request__inner { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: center; }
-.request__text .section__title { margin-top: 16px; }
 .request__text .section__lead { margin-top: 24px; justify-self: start; }
 .request__bullets { list-style: none; padding: 0; margin: 32px 0 0; display: grid; gap: 12px; }
 .request__bullets li { display: flex; align-items: center; gap: 12px; font-weight: 500; }
@@ -433,7 +430,6 @@ button { font: inherit; cursor: pointer; }
 
 @media (max-width: 900px) {
   .section__head { grid-template-columns: 1fr; gap: 16px; }
-  .section__num { padding-top: 0; }
   .section__lead { justify-self: start; }
   .calc { grid-template-columns: 1fr; }
   .calc__result { position: static; }
