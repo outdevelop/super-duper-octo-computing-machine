@@ -9,7 +9,17 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { chromium } = require('playwright');
+const SETUP_HINT = 'Для скриншотов один раз выполните:\n  npm install\n  npm run screenshots:setup';
+
+let chromium;
+try {
+  ({ chromium } = require('playwright'));
+  require.resolve('@fontsource-variable/unbounded/index.css');
+  require.resolve('@fontsource-variable/manrope/index.css');
+} catch {
+  console.error('Не установлены зависимости для скриншотов (playwright, шрифты).\n' + SETUP_HINT);
+  process.exit(1);
+}
 const { open } = require('../server/db');
 const { createApp } = require('../server/index');
 const { seedDemo, DEMO_ACCOUNTS } = require('./demo-data');
@@ -42,13 +52,36 @@ async function main() {
   const server = createApp({ db }).listen(0);
   const base = `http://127.0.0.1:${server.address().port}`;
   const fonts = localFonts();
-  const browser = await chromium.launch();
+  let browser;
+  try {
+    browser = await chromium.launch();
+  } catch (err) {
+    server.close();
+    fs.rmSync(tmp, { recursive: true, force: true });
+    if (/Executable doesn't exist|install/i.test(err.message)) {
+      console.error('Не найден браузер Chromium для Playwright.\n' + SETUP_HINT);
+      process.exit(1);
+    }
+    throw err;
+  }
   const errors = [];
   const saved = [];
+  const unchanged = [];
 
   async function newPage(viewport) {
     const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
     const page = await ctx.newPage();
+    // Анимации и переходы отключены с самого начала — повторные запуски дают одинаковые снимки.
+    // Таблица стилей через CSSOM не нарушает CSP страницы.
+    await page.addInitScript(() => {
+      const freeze = () => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('*, *::before, *::after { transition: none !important; animation: none !important; caret-color: transparent !important; }');
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', freeze);
+      else freeze();
+    });
     await page.route('https://fonts.googleapis.com/**', (r) => r.fulfill({ contentType: 'text/css', body: fonts.css }));
     await page.route('https://fonts.gstatic.com/local/**', (r) => {
       const file = fonts.files[r.request().url().split('/').pop()];
@@ -96,9 +129,39 @@ async function main() {
   async function shot(page, name, target) {
     if (!target) await checkOverflow(page, name);
     const file = path.join(OUT, name + '.png');
-    if (target) await page.locator(target).first().screenshot({ path: file });
-    else await page.screenshot({ path: file });
-    saved.push(name);
+    const png = target ? await page.locator(target).first().screenshot() : await page.screenshot();
+    if (fs.existsSync(file) && await nearlySame(fs.readFileSync(file), png)) {
+      unchanged.push(name);
+    } else {
+      fs.writeFileSync(file, png);
+      saved.push(name);
+    }
+  }
+
+  // Сравнивает два PNG попиксельно в браузере. Единичные пиксели шума отрисовки
+  // не считаются изменением, чтобы не плодить лишние правки в git.
+  let comparer;
+  async function nearlySame(a, b) {
+    if (a.equals(b)) return true;
+    comparer = comparer || await browser.newPage();
+    return comparer.evaluate(async ([x, y]) => {
+      const load = (src) => new Promise((ok, fail) => { const i = new Image(); i.onload = () => ok(i); i.onerror = fail; i.src = 'data:image/png;base64,' + src; });
+      const [A, B] = await Promise.all([load(x), load(y)]);
+      if (A.width !== B.width || A.height !== B.height) return false;
+      const c = document.createElement('canvas');
+      c.width = A.width; c.height = A.height;
+      const g = c.getContext('2d');
+      g.drawImage(A, 0, 0);
+      const da = g.getImageData(0, 0, c.width, c.height).data;
+      g.clearRect(0, 0, c.width, c.height);
+      g.drawImage(B, 0, 0);
+      const db = g.getImageData(0, 0, c.width, c.height).data;
+      let changed = 0;
+      for (let i = 0; i < da.length; i += 4) {
+        if (Math.max(Math.abs(da[i] - db[i]), Math.abs(da[i + 1] - db[i + 1]), Math.abs(da[i + 2] - db[i + 2])) > 16 && ++changed >= 50) return false;
+      }
+      return true;
+    }, [a.toString('base64'), b.toString('base64')]);
   }
 
   // Вся страница целиком: окно растягивается на высоту документа, чтобы липкие
@@ -228,7 +291,8 @@ async function main() {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 
-  console.log(`Скриншотов сохранено: ${saved.length} → ${path.relative(process.cwd(), OUT)}/`);
+  console.log(`Скриншоты в ${path.relative(process.cwd(), OUT)}/: обновлено ${saved.length}, без изменений ${unchanged.length}`);
+  if (saved.length) console.log('  обновлены: ' + saved.join(', '));
   if (errors.length) {
     console.error('Ошибки на страницах:\n  ' + errors.join('\n  '));
     process.exitCode = 1;

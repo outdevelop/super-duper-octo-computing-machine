@@ -71,7 +71,8 @@ npm start            # http://localhost:3000, админка — http://localhos
 
 - `npm run create-manager -- email пароль [имя]` — создать менеджера (или сделать это в разделе «Сотрудники»).
 - `npm run demo` — сайт на отдельной демо-базе с заказами, клиентами и заявками (логины выводятся в консоль).
-- `npm run screenshots` — обновить скриншоты в `docs/screenshots/`.
+- `npm run screenshots` — обновить скриншоты в `docs/screenshots/`. Перед первым запуском один раз:
+  `npm install` и `npm run screenshots:setup` (скачает браузер Chromium, ~150 МБ).
 - `npm run dev` — перезапуск сервера при изменениях.
 - `npm test` — тесты API.
 

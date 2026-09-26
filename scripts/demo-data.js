@@ -2,7 +2,7 @@
 
 // Демо-данные: сотрудники, клиенты, заказы за последние два месяца, заявки с сайта.
 // Используются командой `npm run demo` и генератором скриншотов. Данные детерминированы
-// (фиксированный seed), даты отсчитываются от текущего момента.
+// (фиксированный seed), даты отсчитываются от начала текущих суток.
 
 const { hashPassword } = require('../server/auth');
 const T = require('../public/tariffs.js');
@@ -42,7 +42,10 @@ function sqlTime(date) {
 function seedDemo(db) {
   let seed = 7;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const now = Date.now();
+  // Отсчёт от начала текущих суток (UTC): повторные запуски в течение дня дают одинаковые данные и скриншоты.
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const now = today.getTime();
 
   const insUser = db.prepare('INSERT INTO users (email, password_hash, name, phone, role, created_at) VALUES (?, ?, ?, ?, ?, ?)');
   insUser.run(DEMO_ACCOUNTS.admin.email, hashPassword(DEMO_ACCOUNTS.admin.password), 'Сергей Админов', '+7 (914) 111-22-33', 'admin', sqlTime(new Date(now - 60 * 864e5)));
