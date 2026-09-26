@@ -154,7 +154,9 @@ button { font: inherit; cursor: pointer; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(142,205,248,.55); } 70% { box-shadow: 0 0 0 10px rgba(142,205,248,0); } 100% { box-shadow: 0 0 0 0 rgba(142,205,248,0); } }
 
 .hero__title { margin-top: 28px; font-size: clamp(38px, 6.2vw, 88px); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
-.outline { color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+/* Обводка под заливкой цвета фона: у вариативных шрифтов буквы состоят из
+   наложенных контуров, и без этого внутри букв видны лишние линии. */
+.outline { color: var(--bg); -webkit-text-stroke: 3px var(--accent); paint-order: stroke fill; }
 .hero__lead { margin-top: 28px; max-width: 520px; font-size: 18px; color: var(--muted); }
 .hero__cta { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; }
 
@@ -271,7 +273,7 @@ button { font: inherit; cursor: pointer; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line); }
 .step { padding: 32px 24px 32px 0; position: relative; }
 .step + .step { padding-left: 24px; border-left: 1px solid var(--line); }
-.step__num { display: block; font-family: var(--font-display); font-size: 56px; font-weight: 700; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px var(--line-strong); transition: color .4s, -webkit-text-stroke-color .4s; }
+.step__num { display: block; font-family: var(--font-display); font-size: 56px; font-weight: 700; letter-spacing: -.04em; color: var(--bg); -webkit-text-stroke: 2px var(--line-strong); paint-order: stroke fill; transition: color .4s, -webkit-text-stroke-color .4s; }
 .step:hover .step__num { color: var(--accent); -webkit-text-stroke-color: var(--accent); }
 .step h3 { margin-top: 40px; font-size: 20px; }
 .step p { margin-top: 12px; font-size: 15px; color: var(--muted); }
