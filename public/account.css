@@ -159,9 +159,12 @@
   width: 100%; padding: 16px 18px; min-height: 54px;
   border: 1px solid var(--ink-line); border-radius: var(--radius-sm);
   background: var(--light); color: var(--ink);
-  font: 500 16px var(--font-body); resize: vertical;
+  font: 500 16px var(--font-body);
   transition: border-color .2s;
 }
+textarea.field__input { resize: vertical; }
+.field__input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.field__input[type="number"]::-webkit-inner-spin-button, .field__input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .field__input:focus { outline: none; border-color: var(--accent-deep); }
 .field__input:disabled { color: var(--ink-muted); cursor: not-allowed; }
 .field__input.is-invalid { border-color: #c62828; }

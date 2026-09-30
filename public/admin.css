@@ -286,3 +286,8 @@ a.kpi:hover { border-color: var(--accent-deep); transform: translateY(-2px); }
   .chart svg { height: 200px; }
   .adm-dialog__foot .btn { flex: 1; }
 }
+
+/* Блок «Своя цена / ETA» на тёмной карточке нового заказа */
+.quote-extra { display: grid; gap: 18px; margin-bottom: 28px; }
+.quote-extra .field > label { color: var(--muted); margin-bottom: 8px; }
+.quote-extra .field__input { color-scheme: light; }

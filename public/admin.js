@@ -821,9 +821,9 @@
             '<p class="calc__label">Цена по тарифу</p>' +
             '<p class="calc__price"><span id="nPrice">—</span>&nbsp;₽</p>' +
             '<dl class="calc__details"><div><dt>Срок</dt><dd id="nDays">—</dd></div><div><dt>Расстояние</dt><dd id="nKm">—</dd></div></dl>' +
-            '<div class="field"><label class="calc__label" for="nManual">Своя цена, ₽</label>' +
+            '<div class="quote-extra"><div class="field"><label class="calc__label" for="nManual">Своя цена, ₽</label>' +
               '<input class="field__input" id="nManual" name="price" type="number" min="0" step="500" placeholder="Оставьте пустым — по тарифу"></div>' +
-            '<div class="field"><label class="calc__label" for="nEta">Дата прибытия (ETA)</label><input class="field__input" id="nEta" name="eta" type="date"></div>' +
+            '<div class="field"><label class="calc__label" for="nEta">Дата прибытия (ETA)</label><input class="field__input" id="nEta" name="eta" type="date"></div></div>' +
             '<button type="submit" class="btn btn--dark btn--block">Создать заказ <span class="arrow">→</span></button>' +
             '<p class="form-status" role="status"></p>' +
           '</aside>' +
