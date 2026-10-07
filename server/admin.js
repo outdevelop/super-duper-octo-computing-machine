@@ -100,8 +100,8 @@ function createAdminApi(db, auth, store) {
       FROM orders WHERE created_at >= date('now', '-29 days') GROUP BY day`),
     statuses: db.prepare('SELECT status, COUNT(*) AS n FROM orders GROUP BY status'),
     cities: db.prepare(`
-      SELECT city, COUNT(*) AS n, COALESCE(SUM(price), 0) AS revenue FROM orders
-      WHERE status != 'cancelled' GROUP BY city ORDER BY n DESC, revenue DESC LIMIT 6`),
+      SELECT origin, city, COUNT(*) AS n, COALESCE(SUM(price), 0) AS revenue FROM orders
+      WHERE status != 'cancelled' GROUP BY origin, city ORDER BY n DESC, revenue DESC LIMIT 6`),
     recentOrders: db.prepare(ORDER_WITH_CLIENT + ' ORDER BY o.id DESC LIMIT 6'),
     recentLeads: db.prepare("SELECT * FROM leads WHERE status IN ('new', 'in_work') ORDER BY id DESC LIMIT 5")
   };
@@ -121,7 +121,7 @@ function createAdminApi(db, auth, store) {
       kpi: { ...dash.kpi.get() },
       daily: days,
       statuses: Object.fromEntries(dash.statuses.all().map((r) => [r.status, r.n])),
-      cities: dash.cities.all().map((r) => ({ city: r.city, orders: r.n, revenue: r.revenue })),
+      cities: dash.cities.all().map((r) => ({ city: r.origin + ' → ' + r.city, orders: r.n, revenue: r.revenue })),
       recentOrders: dash.recentOrders.all().map((o) => serializeOrder(o, tariffs, { staff: true })),
       recentLeads: dash.recentLeads.all().map(leadOut)
     });
@@ -137,10 +137,10 @@ function createAdminApi(db, auth, store) {
       const num = parseOrderNumber(search);
       const like = '%' + search.toLowerCase().replace(/[\\%_]/g, (c) => '\\' + c) + '%';
       const parts = [
-        "ulower(o.city) LIKE ? ESCAPE '\\'", "ulower(o.car_model) LIKE ? ESCAPE '\\'", "ulower(o.vin) LIKE ? ESCAPE '\\'",
-        "ulower(u.name) LIKE ? ESCAPE '\\'", "ulower(u.email) LIKE ? ESCAPE '\\'"
+        "ulower(o.city) LIKE ? ESCAPE '\\'", "ulower(o.origin) LIKE ? ESCAPE '\\'", "ulower(o.car_model) LIKE ? ESCAPE '\\'",
+        "ulower(o.vin) LIKE ? ESCAPE '\\'", "ulower(u.name) LIKE ? ESCAPE '\\'", "ulower(u.email) LIKE ? ESCAPE '\\'"
       ];
-      params.push(like, like, like, like, like);
+      params.push(like, like, like, like, like, like);
       const digits = search.replace(/\D/g, '');
       if (digits.length >= 4) { parts.push('digits(u.phone) LIKE ?'); params.push('%' + digits + '%'); }
       if (num) { parts.push('o.id = ?'); params.push(num); }
@@ -175,11 +175,11 @@ function createAdminApi(db, auth, store) {
     const f = orderFilters(req);
     const rows = db.prepare(ORDER_WITH_CLIENT + f.sql + ` ORDER BY ${f.order} LIMIT 10000`).all(...f.params);
     const tariffs = store.labelTariffs();
-    const head = ['Номер', 'Создан', 'Статус', 'Оплата', 'Оплачено', 'Клиент', 'Телефон', 'Email', 'Город', 'Авто', 'Тип', 'VIN',
+    const head = ['Номер', 'Создан', 'Статус', 'Оплата', 'Оплачено', 'Клиент', 'Телефон', 'Email', 'Откуда', 'Куда', 'Авто', 'Тип', 'VIN',
       'Опции', 'Цена', 'Км', 'Срок', 'ETA', 'Водитель', 'Автовоз', 'Комментарий клиента', 'Заметка менеджера'];
     const lines = rows.map((o) => [
       orderNumber(o.id), o.created_at, T.STATUSES[o.status] || o.status, T.PAYMENT_STATUSES[o.payment_status] || o.payment_status,
-      o.paid_amount, o.client_name, o.client_phone, o.client_email, o.city, o.car_model, T.carTypeLabel(tariffs, o.car_type), o.vin,
+      o.paid_amount, o.client_name, o.client_phone, o.client_email, o.origin, o.city, o.car_model, T.carTypeLabel(tariffs, o.car_type), o.vin,
       T.optionLabels(tariffs, JSON.parse(o.options)).join(', '), o.price, o.km, `${o.days_min}–${o.days_max}`, o.eta,
       o.driver, o.truck, o.comment, o.manager_note
     ].map(csvCell).join(';'));
@@ -197,12 +197,14 @@ function createAdminApi(db, auth, store) {
   function orderFields(b, current) {
     const tariffs = store.labelTariffs();
     const out = {};
-    if (b.city !== undefined) {
-      const city = v.str(b.city, { max: 100, required: true, field: 'Город' });
-      const c = T.findCity(tariffs, city);
-      if (!c && (!current || city !== current.city)) throw new v.HttpError(400, 'Город не найден в тарифах');
-      out.city = city;
-      if (c && (!current || city !== current.city)) { out.km = c.km; out.days_min = c.days[0]; out.days_max = c.days[1]; }
+    if (b.origin !== undefined) out.origin = v.str(b.origin, { max: 100, required: true, field: 'Откуда' });
+    if (b.city !== undefined) out.city = v.str(b.city, { max: 100, required: true, field: 'Куда' });
+    // Маршрут изменился — расстояние и срок берём из тарифа, а если его нет, обнуляем.
+    if (current && ((out.origin && out.origin !== current.origin) || (out.city && out.city !== current.city))) {
+      const c = T.routeCity(tariffs, out.origin || current.origin, out.city || current.city);
+      out.km = c ? c.km : 0;
+      out.days_min = c ? c.days[0] : 0;
+      out.days_max = c ? c.days[1] : 0;
     }
     if (b.carType !== undefined) {
       const key = v.str(b.carType, { max: 40, required: true, field: 'Тип авто' });
@@ -244,12 +246,12 @@ function createAdminApi(db, auth, store) {
       newClient = { name, phone, email };
     }
 
-    const tariffs = store.publicTariffs();
-    const city = v.str(b.city, { max: 100, required: true, field: 'Город' });
+    const origin = v.str(b.origin, { max: 100, field: 'Откуда' }) || T.ORIGIN;
+    const city = v.str(b.city, { max: 100, required: true, field: 'Куда' });
     const carType = v.str(b.carType, { max: 40, required: true, field: 'Тип авто' });
     const options = Array.isArray(b.options) ? b.options.filter((o) => typeof o === 'string') : [];
-    const quote = T.quote(tariffs, city, carType, options);
-    if (!quote) throw new v.HttpError(400, 'Неизвестный город или тип автомобиля');
+    const quote = store.routeQuote(origin, city, carType, options);
+    if (!quote) throw new v.HttpError(400, 'Неизвестный тип автомобиля');
     const fields = orderFields({
       carModel: b.carModel === undefined ? '' : b.carModel, vin: b.vin || '', pickupAddress: b.pickupAddress || '', comment: b.comment || '',
       managerNote: b.managerNote || '', eta: b.eta || ''
@@ -264,7 +266,7 @@ function createAdminApi(db, auth, store) {
         audit(req, 'Создал клиента', 'client', clientId, newClient.name);
       }
       const id = Number(oq.insert.run(
-        clientId, city, carType, fields.car_model, fields.vin, JSON.stringify(quote.options),
+        clientId, origin, city, carType, fields.car_model, fields.vin, JSON.stringify(quote.options),
         fields.pickup_address, fields.comment, price, quote.km, quote.days[0], quote.days[1]
       ).lastInsertRowid);
       db.prepare('UPDATE orders SET manager_note = ?, eta = ? WHERE id = ?').run(fields.manager_note, fields.eta, id);
@@ -286,7 +288,9 @@ function createAdminApi(db, auth, store) {
     const changes = [];
     if (fields.price !== undefined && fields.price !== order.price) changes.push(`цена ${order.price} → ${fields.price}`);
     if (fields.payment_status && fields.payment_status !== order.payment_status) changes.push(`оплата: ${T.PAYMENT_STATUSES[fields.payment_status]}`);
-    if (fields.city && fields.city !== order.city) changes.push(`город: ${fields.city}`);
+    if ((fields.origin && fields.origin !== order.origin) || (fields.city && fields.city !== order.city)) {
+      changes.push(`маршрут: ${fields.origin || order.origin} → ${fields.city || order.city}`);
+    }
     audit(req, 'Изменил заказ', 'order', order.id, changes.join('; ') || orderNumber(order.id));
     res.json({ order: orderOut(oq.byId.get(order.id)) });
   });
@@ -316,7 +320,10 @@ function createAdminApi(db, auth, store) {
   /* ---------- Заявки с сайта ---------- */
 
   function leadOut(l) {
-    return { id: l.id, name: l.name, phone: l.phone, route: l.route, estimate: l.estimate, status: l.status, note: l.note, userId: l.user_id, createdAt: l.created_at };
+    return {
+      id: l.id, name: l.name, phone: l.phone, company: l.company, email: l.email, message: l.message,
+      route: l.route, estimate: l.estimate, status: l.status, note: l.note, userId: l.user_id, createdAt: l.created_at
+    };
   }
 
   router.get('/leads', staff, (req, res) => {
@@ -325,8 +332,8 @@ function createAdminApi(db, auth, store) {
     const search = query(req, 'q');
     if (search) {
       const like = '%' + search.toLowerCase().replace(/[\\%_]/g, (c) => '\\' + c) + '%';
-      const parts = ["ulower(name) LIKE ? ESCAPE '\\'", "ulower(route) LIKE ? ESCAPE '\\'", "ulower(note) LIKE ? ESCAPE '\\'"];
-      params.push(like, like, like);
+      const parts = ['name', 'company', 'email', 'message', 'route', 'note'].map((c) => `ulower(${c}) LIKE ? ESCAPE '\\'`);
+      params.push(like, like, like, like, like, like);
       const digits = search.replace(/\D/g, '');
       if (digits.length >= 4) { parts.push('digits(phone) LIKE ?'); params.push('%' + digits + '%'); }
       where.push('(' + parts.join(' OR ') + ')');

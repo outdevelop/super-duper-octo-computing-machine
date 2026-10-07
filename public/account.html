@@ -39,11 +39,11 @@
   <div class="hero__grid" aria-hidden="true"></div>
   <div class="container auth__inner">
     <div class="auth__intro">
-      <p class="eyebrow"><span class="dot"></span>Личный кабинет клиента</p>
+      <p class="eyebrow"><span class="dot"></span>Кабинет клиента и партнёра</p>
       <h1 class="auth__title">Ваши машины —<br>под <span class="outline">контролем</span></h1>
       <ul class="auth__list">
         <li><b>Статус в реальном времени</b><span>Приёмка, погрузка, в пути, прибытие — всё с датами.</span></li>
-        <li><b>Оформление за минуту</b><span>Цена рассчитывается сразу и фиксируется в заявке.</span></li>
+        <li><b>Заявки онлайн</b><span>Любой маршрут по России. По тарифным направлениям цена считается сразу.</span></li>
         <li><b>Вся история в одном месте</b><span>Все перевозки и документы по ним.</span></li>
       </ul>
     </div>
@@ -159,7 +159,7 @@
         <div class="view__head">
           <div>
             <h1 class="view__title">Новый заказ</h1>
-            <p class="view__sub">Отправка из Владивостока. Цена фиксируется при создании заявки.</p>
+            <p class="view__sub">Перевозим по всей России. Если на маршрут есть тариф — цена считается сразу, иначе её рассчитает менеджер.</p>
           </div>
         </div>
 
@@ -167,13 +167,14 @@
           <form class="calc__form" id="orderForm" novalidate>
             <div class="grid-2">
               <div class="field">
-                <label>Откуда</label>
-                <div class="field__static">Владивосток</div>
+                <label for="oOrigin">Откуда *</label>
+                <input class="field__input" id="oOrigin" name="origin" list="oCities" maxlength="100" autocomplete="off" placeholder="Город отправления" required>
               </div>
               <div class="field">
-                <label for="oCity">Куда</label>
-                <select id="oCity" name="city"></select>
+                <label for="oCity">Куда *</label>
+                <input class="field__input" id="oCity" name="city" list="oCities" maxlength="100" autocomplete="off" placeholder="Город назначения" required>
               </div>
+              <datalist id="oCities"></datalist>
             </div>
 
             <fieldset class="field">
@@ -198,7 +199,7 @@
             </div>
             <div class="field">
               <label for="oPickup">Где забрать автомобиль</label>
-              <input class="field__input" id="oPickup" name="pickupAddress" maxlength="300" placeholder="Порт, СВХ, адрес продавца во Владивостоке">
+              <input class="field__input" id="oPickup" name="pickupAddress" maxlength="300" placeholder="Склад, порт, СВХ или адрес">
             </div>
             <div class="field">
               <label for="oComment">Комментарий</label>
@@ -207,8 +208,9 @@
           </form>
 
           <aside class="calc__result">
-            <p class="calc__label">Итого к оплате</p>
-            <p class="calc__price"><span id="oPrice">—</span>&nbsp;₽</p>
+            <p class="calc__label">Стоимость</p>
+            <p class="calc__price" id="oPrice">—</p>
+            <p class="calc__hint" id="oHint">Укажите, откуда и куда везём</p>
             <dl class="calc__details">
               <div><dt>Маршрут</dt><dd id="oRoute">—</dd></div>
               <div><dt>Срок в пути</dt><dd id="oDays">—</dd></div>

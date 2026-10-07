@@ -3,13 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Карго Экспресс — доставка автомобилей автовозом из Владивостока</title>
-  <meta name="description" content="Перевозка автомобилей автовозом из Владивостока в любой город России. Фиксированная цена, страховка, GPS-трекинг, доставка до двери.">
+  <title>Карго Экспресс — перевозка автомобилей автовозами по всей России</title>
+  <meta name="description" content="Перевозка автомобилей автовозами по всей России для дилеров, автопроизводителей, лизинговых и каршеринговых компаний. Свой парк, договор, страхование, личный кабинет для партнёров.">
   <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="Карго Экспресс — перевозка автомобилей по всей России">
+  <meta property="og:description" content="Автовозы для бизнеса: партии новых машин, выделенные рейсы, регулярные отгрузки по графику.">
+  <meta property="og:image" content="img/work/volvo-peugeot-1600.webp">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="img/work/volvo-peugeot-1600.webp" imagesrcset="img/work/volvo-peugeot-800.webp 800w, img/work/volvo-peugeot-1600.webp 1600w" imagesizes="(max-width: 1340px) 100vw, 1280px">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -24,18 +28,18 @@
     </a>
 
     <nav class="nav" id="nav" aria-label="Основная навигация">
-      <a href="#calc">Расчёт</a>
-      <a href="#how">Как работаем</a>
-      <a href="#routes">Направления</a>
+      <a href="#clients">Партнёрам</a>
+      <a href="#services">Услуги</a>
+      <a href="#geo">География</a>
       <a href="#fleet">Автопарк</a>
-      <a href="#faq">Вопросы</a>
+      <a href="#about">О компании</a>
       <a href="#contacts">Контакты</a>
     </nav>
 
     <div class="header__actions">
       <a class="header__phone" href="tel:+79000000000" data-set="phone">+7 (900) 000-00-00</a>
       <a class="header__login" href="account.html" id="loginLink">Войти</a>
-      <a class="btn btn--sm btn--light" href="#request">Заявка</a>
+      <a class="btn btn--sm btn--light" href="#partner">Сотрудничество</a>
       <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
         <span></span><span></span>
       </button>
@@ -45,340 +49,397 @@
 
 <main>
 
-  <!-- HERO -->
+  <!-- ПЕРВЫЙ ЭКРАН -->
   <section class="hero">
-    <div class="hero__grid" aria-hidden="true"></div>
-    <div class="container hero__inner">
-      <div class="hero__content">
-        <p class="eyebrow reveal"><span class="dot"></span>Отправки из Владивостока каждый день</p>
-        <h1 class="hero__title reveal">
-          Доставим авто<br>
-          из <span class="outline">Владивостока</span><br>
-          в любой город
-        </h1>
-        <p class="hero__lead reveal">
-          Автовозы от порта до вашей двери. Фиксированная цена в договоре, полная страховка
-          и онлайн-отслеживание на всём пути — от 9&nbsp;000&nbsp;км до последнего метра.
-        </p>
-        <div class="hero__cta reveal">
-          <a href="#calc" class="btn btn--light btn--lg">Рассчитать стоимость <span class="arrow">→</span></a>
-          <a href="#how" class="btn btn--ghost btn--lg">Как это работает</a>
-        </div>
-
-        <ul class="hero__stats reveal">
-          <li><b data-count="12400">0</b><span>машин доставлено</span></li>
-          <li><b data-count="180" data-suffix="+">0</b><span>городов России</span></li>
-          <li><b>24/7</b><span>поддержка и GPS-трекинг</span></li>
-        </ul>
-      </div>
-
-      <div class="hero__visual reveal" aria-hidden="true">
-        <div class="route-card">
-          <div class="route-card__head">
-            <span class="tag">В пути</span>
-            <span class="mono">№ КЭ-24817</span>
-          </div>
-          <div class="route-card__cities">
-            <div><small>Откуда</small><b>Владивосток</b></div>
-            <div class="route-card__line"><span></span></div>
-            <div class="ta-r"><small>Куда</small><b>Москва</b></div>
-          </div>
-          <div class="route-card__progress"><span></span></div>
-          <div class="route-card__meta">
-            <span>Toyota Land Cruiser 300</span>
-            <span>Прибытие через 6 дн.</span>
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="hero__head">
+        <p class="eyebrow reveal"><span class="dot"></span>Автовозы для бизнеса</p>
+        <h1 class="hero__title reveal">Перевозим автомобили<br><span class="hero__accent">по всей России</span></h1>
+        <div class="hero__row reveal">
+          <p class="hero__lead">
+            Партии новых машин с заводов, складов и портов — в дилерские центры, лизинговые
+            и каршеринговые компании в любом регионе. Свой парк автовозов, договор и закрывающие документы.
+          </p>
+          <div class="hero__cta">
+            <a href="#partner" class="btn btn--light btn--lg">Обсудить сотрудничество <span class="arrow">→</span></a>
+            <a href="#fleet" class="btn btn--ghost btn--lg">Автопарк</a>
           </div>
         </div>
-
-        <svg class="truck" viewBox="0 0 640 260" fill="none">
-          <!-- trailer frame -->
-          <path d="M40 150 L440 150 M60 95 L430 95" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          <path d="M60 95 L60 150 M180 95 L180 150 M300 95 L300 150 M430 95 L440 150" stroke="currentColor" stroke-width="3"/>
-          <path d="M40 150 L40 180 L450 180 L450 150" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
-          <!-- top cars -->
-          <path transform="translate(78 92)" d="M0 0 V-12 q0-4 4-4 h14 l16-14 h46 l22 14 h26 q6 0 6 6 v10 z" fill="var(--accent)"/>
-          <path transform="translate(238 92)" d="M0 0 V-12 q0-4 4-4 h14 l16-14 h46 l22 14 h26 q6 0 6 6 v10 z" fill="var(--accent)"/>
-          <!-- bottom cars -->
-          <path transform="translate(68 147)" d="M0 0 V-12 q0-4 4-4 h14 l16-14 h46 l22 14 h26 q6 0 6 6 v10 z" fill="currentColor" opacity=".55"/>
-          <path transform="translate(228 147)" d="M0 0 V-12 q0-4 4-4 h14 l16-14 h46 l22 14 h26 q6 0 6 6 v10 z" fill="currentColor" opacity=".55"/>
-          <!-- cab -->
-          <path d="M470 180 L470 90 q0-12 12-12 h60 q14 0 22 12 l34 50 q6 8 6 18 V180 z" fill="currentColor"/>
-          <path d="M540 92 h-52 v38 h80 z" fill="var(--bg)" opacity=".9"/>
-          <!-- wheels -->
-          <g fill="var(--bg)" stroke="currentColor" stroke-width="6">
-            <circle cx="95" cy="190" r="20"/><circle cx="145" cy="190" r="20"/>
-            <circle cx="370" cy="190" r="20"/><circle cx="420" cy="190" r="20"/>
-            <circle cx="510" cy="190" r="20"/><circle cx="570" cy="190" r="20"/>
-          </g>
-          <path d="M0 222 H640" stroke="currentColor" stroke-width="2" stroke-dasharray="14 12" opacity=".4" class="road"/>
-        </svg>
       </div>
+
+      <figure class="hero__photo reveal">
+        <img src="img/work/volvo-peugeot-1600.webp"
+             srcset="img/work/volvo-peugeot-800.webp 800w, img/work/volvo-peugeot-1600.webp 1600w"
+             sizes="(max-width: 1340px) 100vw, 1280px"
+             width="1600" height="1204" fetchpriority="high"
+             alt="Автовоз Volvo «Карго Экспресс» с партией новых кроссоверов на площадке отгрузки">
+        <figcaption class="hero__facts">
+          <div><b>до 8</b><span>автомобилей в одном автовозе</span></div>
+          <div><b>от 1 авто</b><span>до регулярных партий по графику</span></div>
+          <div><b>вся Россия</b><span>от Калининграда до Владивостока</span></div>
+          <div><b>договор</b><span>страхование и закрывающие документы</span></div>
+        </figcaption>
+      </figure>
     </div>
 
     <div class="marquee" aria-hidden="true">
       <div class="marquee__track">
-        <span>Москва</span><span>Санкт-Петербург</span><span>Новосибирск</span><span>Екатеринбург</span><span>Казань</span><span>Краснодар</span><span>Иркутск</span><span>Красноярск</span><span>Хабаровск</span><span>Омск</span><span>Уфа</span><span>Самара</span>
-        <span>Москва</span><span>Санкт-Петербург</span><span>Новосибирск</span><span>Екатеринбург</span><span>Казань</span><span>Краснодар</span><span>Иркутск</span><span>Красноярск</span><span>Хабаровск</span><span>Омск</span><span>Уфа</span><span>Самара</span>
+        <span>Дилерские центры</span><span>Автопроизводители</span><span>Импортёры</span><span>Лизинговые компании</span><span>Каршеринг</span><span>Таксопарки</span><span>Спецтранспорт</span><span>Автосалоны</span>
+        <span>Дилерские центры</span><span>Автопроизводители</span><span>Импортёры</span><span>Лизинговые компании</span><span>Каршеринг</span><span>Таксопарки</span><span>Спецтранспорт</span><span>Автосалоны</span>
       </div>
     </div>
   </section>
 
-  <!-- CALCULATOR -->
-  <section class="section section--light" id="calc">
+  <!-- КОМУ ПОЛЕЗНЫ -->
+  <section class="section section--light" id="clients">
     <div class="container">
       <div class="section__head">
-        <h2 class="section__title">Калькулятор<br>стоимости</h2>
-        <p class="section__lead">Предварительная цена за 10 секунд. Точную сумму менеджер зафиксирует в договоре — она не изменится в пути.</p>
+        <h2 class="section__title">С кем<br>мы работаем</h2>
+        <p class="section__lead">Берём на себя логистику автомобилей для компаний, у которых машины — это товар, парк или контракт. Под каждую задачу — своя схема перевозки.</p>
       </div>
 
-      <div class="calc">
-        <form class="calc__form" id="calcForm" novalidate>
-          <div class="field">
-            <label>Откуда</label>
-            <div class="field__static">Владивосток</div>
+      <div class="segments">
+        <article class="segment segment--photo segment--wide reveal">
+          <img src="img/work/carsharing-night-800.webp" srcset="img/work/carsharing-night-800.webp 800w, img/work/carsharing-night-1600.webp 1280w"
+               sizes="(max-width: 900px) 100vw, 640px" width="1280" height="960" loading="lazy"
+               alt="Автовоз с восемью кроссоверами каршеринга на ночной стоянке">
+          <div class="segment__body">
+            <h3>Каршеринг и таксопарки</h3>
+            <p>Развозим парк по городам запуска и перебрасываем машины между регионами — партиями, по графику.</p>
           </div>
-
-          <div class="field">
-            <label for="city">Куда</label>
-            <select id="city" name="city"></select>
+        </article>
+        <article class="segment reveal">
+          <svg class="segment__icon" viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>
+          <h3>Дилерские центры</h3>
+          <p>Регулярные отгрузки со складов дистрибьютора в салоны. Согласуем окна выгрузки и сдаём машины по акту.</p>
+        </article>
+        <article class="segment reveal">
+          <svg class="segment__icon" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20V10l5 3V10l5 3V6h6v14"/></svg>
+          <h3>Производители и импортёры</h3>
+          <p>Вывоз с заводов, из портов и СВХ, доставка на склады и в дилерскую сеть по всей стране.</p>
+        </article>
+        <article class="segment reveal">
+          <svg class="segment__icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg>
+          <h3>Лизинговые компании</h3>
+          <p>Доставка новых машин лизингополучателям и перевозка изъятых автомобилей в любой регион.</p>
+        </article>
+        <article class="segment reveal">
+          <svg class="segment__icon" viewBox="0 0 24 24"><path d="M3 17v-4l2-5h11l3 5h2v4"/><circle cx="7.5" cy="17.5" r="2"/><circle cx="16.5" cy="17.5" r="2"/><path d="M3 13h18"/></svg>
+          <h3>Автосалоны</h3>
+          <p>Новые машины и автомобили с пробегом — от одной до полной загрузки автовоза.</p>
+        </article>
+        <article class="segment segment--photo segment--half reveal">
+          <img src="img/work/ambulance-800.webp" srcset="img/work/ambulance-800.webp 800w, img/work/ambulance-1600.webp 1448w"
+               sizes="(max-width: 900px) 100vw, 320px" width="1448" height="1086" loading="lazy"
+               alt="Перевозка автомобилей скорой медицинской помощи на автовозе">
+          <div class="segment__body">
+            <h3>Спецтранспорт и госзаказ</h3>
+            <p>Скорые, микроавтобусы и коммерческий транспорт по контрактам — с полным пакетом документов.</p>
           </div>
-
-          <fieldset class="field">
-            <legend>Тип автомобиля</legend>
-            <div class="chips" id="carType"></div>
-          </fieldset>
-
-          <fieldset class="field" id="calcOptionsField">
-            <legend>Опции</legend>
-            <div class="toggles" id="calcOptions"></div>
-          </fieldset>
-        </form>
-
-        <aside class="calc__result" aria-live="polite">
-          <p class="calc__label">Стоимость доставки</p>
-          <p class="calc__price"><span id="price">—</span>&nbsp;₽</p>
-          <dl class="calc__details">
-            <div><dt>Срок в пути</dt><dd id="days">—</dd></div>
-            <div><dt>Расстояние</dt><dd id="distance">—</dd></div>
-            <div><dt>Страховка</dt><dd>включена</dd></div>
-          </dl>
-          <a href="account.html#new" class="btn btn--dark btn--block" id="calcCta">Оформить заказ <span class="arrow">→</span></a>
-          <p class="calc__note">Цена ориентировочная, актуальна на текущий сезон.</p>
-        </aside>
+        </article>
+        <a class="segment segment--cta reveal" href="#partner">
+          <h3>Ваша задача не из этого списка?</h3>
+          <p>Расскажите, что и куда нужно везти, — предложим схему перевозки и рассчитаем стоимость.</p>
+          <span class="segment__more">Обсудить задачу <span class="arrow">→</span></span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- HOW -->
-  <section class="section" id="how">
+  <!-- УСЛУГИ -->
+  <section class="section" id="services">
     <div class="container">
       <div class="section__head">
-        <h2 class="section__title">Пять шагов<br>до ключей в руках</h2>
-        <p class="section__lead">Вы не тратите время на логистику. Мы берём на себя всё — от получения машины в порту до передачи у вашего дома.</p>
+        <h2 class="section__title">Услуги</h2>
+        <p class="section__lead">Перевозим легковые автомобили, кроссоверы, внедорожники, пикапы и микроавтобусы — по одному или целыми партиями.</p>
+      </div>
+
+      <div class="services">
+        <div class="services__media" aria-hidden="true">
+          <img class="is-active" data-service-img="0" src="img/work/volvo-evening-800.webp" srcset="img/work/volvo-evening-800.webp 800w, img/work/volvo-evening-1600.webp 1600w" sizes="(max-width: 900px) 100vw, 560px" width="1600" height="1205" loading="lazy" alt="">
+          <img data-service-img="1" src="img/work/actros-autumn-800.webp" srcset="img/work/actros-autumn-800.webp 800w, img/work/actros-autumn-1600.webp 1280w" sizes="(max-width: 900px) 100vw, 560px" width="1280" height="960" loading="lazy" alt="">
+          <img data-service-img="2" src="img/work/scania-yard-800.webp" srcset="img/work/scania-yard-800.webp 800w, img/work/scania-yard-1600.webp 1600w" sizes="(max-width: 900px) 100vw, 560px" width="1600" height="900" loading="lazy" alt="">
+          <img data-service-img="3" src="img/work/ambulance-actros-800.webp" srcset="img/work/ambulance-actros-800.webp 800w, img/work/ambulance-actros-1600.webp 1280w" sizes="(max-width: 900px) 100vw, 560px" width="1280" height="878" loading="lazy" alt="">
+          <img data-service-img="4" src="img/work/sunset-pickups-800.webp" srcset="img/work/sunset-pickups-800.webp 800w, img/work/sunset-pickups-1600.webp 1280w" sizes="(max-width: 900px) 100vw, 560px" width="1280" height="878" loading="lazy" alt="">
+        </div>
+
+        <ul class="services__list">
+          <li class="service is-active" data-service="0" tabindex="0">
+            <h3>Партии автомобилей</h3>
+            <p>Полная загрузка автовоза — до 8 машин за рейс. Минимальная цена за единицу при больших объёмах.</p>
+          </li>
+          <li class="service" data-service="1" tabindex="0">
+            <h3>Выделенный автовоз</h3>
+            <p>Машина работает только на ваш груз: отправка в согласованный день, без попутных догрузов и ожидания.</p>
+          </li>
+          <li class="service" data-service="2" tabindex="0">
+            <h3>Регулярные отгрузки</h3>
+            <p>Закрепляем направления и автовозы под ваш план отгрузок. Фиксированные тарифы в договоре.</p>
+          </li>
+          <li class="service" data-service="3" tabindex="0">
+            <h3>Спец- и коммерческий транспорт</h3>
+            <p>Микроавтобусы, скорая помощь, фургоны и пикапы — проверенные схемы погрузки и крепления.</p>
+          </li>
+          <li class="service" data-service="4" tabindex="0">
+            <h3>Одиночные автомобили</h3>
+            <p>Доставим одну машину попутным рейсом — для небольших компаний, автосалонов и частных клиентов.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЭТАПЫ -->
+  <section class="section section--light" id="how">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Как начинаем<br>работу</h2>
+        <p class="section__lead">От первой заявки до регулярных отгрузок — прозрачно, по договору и с понятными сроками.</p>
       </div>
 
       <ol class="steps">
         <li class="step reveal">
-          <span class="step__num">01</span>
           <h3>Заявка</h3>
-          <p>Оставляете заявку на сайте или звоните. Менеджер уточняет детали за 15 минут.</p>
+          <p>Расскажите о задаче: маршруты, объёмы, сроки. Ответим в течение рабочего дня.</p>
         </li>
         <li class="step reveal">
-          <span class="step__num">02</span>
-          <h3>Договор</h3>
-          <p>Фиксируем цену и сроки. Подписываем онлайн — приезжать никуда не нужно.</p>
+          <h3>Расчёт и договор</h3>
+          <p>Готовим коммерческое предложение и договор, согласуем график отгрузок.</p>
         </li>
         <li class="step reveal">
-          <span class="step__num">03</span>
-          <h3>Приёмка</h3>
-          <p>Забираем авто в порту, на СВХ или у продавца. Фото- и видеоосмотр — 60+ кадров.</p>
+          <h3>Погрузка</h3>
+          <p>Принимаем машины по акту с фотофиксацией и надёжно крепим на платформе.</p>
         </li>
         <li class="step reveal">
-          <span class="step__num">04</span>
           <h3>В пути</h3>
-          <p>GPS-трекинг 24/7 и личный менеджер в мессенджере. Вы всегда знаете, где машина.</p>
+          <p>Статус каждой машины — в личном кабинете, менеджер всегда на связи.</p>
         </li>
         <li class="step reveal">
-          <span class="step__num">05</span>
-          <h3>Выдача</h3>
-          <p>Сверяем состояние по акту, передаём ключи. Оплата — только после осмотра.</p>
+          <h3>Сдача</h3>
+          <p>Выгрузка по акту и закрывающие документы — без задержек.</p>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- FEATURES -->
-  <section class="section section--dark-alt">
+  <!-- ГЕОГРАФИЯ -->
+  <section class="section geo" id="geo">
     <div class="container">
       <div class="section__head">
-        <h2 class="section__title">Почему<br>выбирают нас</h2>
+        <h2 class="section__title">Вся Россия —<br>одна сеть</h2>
+        <p class="section__lead">Возим между любыми городами: от Калининграда до Владивостока, от Мурманска до Краснодара. Регулярные направления и разовые рейсы.</p>
+      </div>
+
+      <div class="geo__wrap reveal">
+        <dl class="geo__stats">
+          <div><dt>10 000+ км</dt><dd>от Калининграда до Владивостока</dd></div>
+          <div><dt>11</dt><dd>часовых поясов — работаем во всех</dd></div>
+        </dl>
+        <svg class="geo__map" viewBox="0 0 1000 553" role="img" aria-labelledby="geoMapTitle">
+          <title id="geoMapTitle">Схема маршрутов: от Калининграда и Мурманска до Краснодара, Якутска и Владивостока</title>
+          <g class="geo__grid"><path d="M-133.7 135.1L-104.5 123.8L-75.7 112.5L-47.1 101.4L-18.6 90.3L9.6 79.4L37.7 68.4L65.7 57.5L93.6 46.7L121.5 35.8L149.3 25L177.2 14.2L205.1 3.3L233.1 -7.6L261.2 -18.5L289.5 -29.5L318 -40.6L346.9 -51.8"/><path d="M-14.4 342.9L10 323.4L34.3 304.2L58.3 285.1L82.2 266.1L106 247.3L129.6 228.5L153.1 209.9L176.6 191.2L200 172.7L223.4 154.1L246.8 135.5L270.3 116.9L293.8 98.2L317.4 79.5L341.2 60.6L365.2 41.5L389.4 22.3"/><path d="M160.9 506.1L178.5 480.3L196 454.8L213.3 429.4L230.5 404.3L247.6 379.2L264.7 354.3L281.6 329.6L298.5 304.8L315.4 280.2L332.3 255.5L349.2 230.8L366.1 206.1L383 181.3L400.1 156.4L417.2 131.4L434.5 106.1L452 80.6"/><path d="M376.6 610.3L385.8 580.5L394.9 550.9L404 521.5L413 492.4L422 463.4L430.9 434.6L439.8 405.9L448.6 377.3L457.5 348.8L466.3 320.2L475.1 291.7L484 263.1L492.8 234.4L501.8 205.5L510.7 176.5L519.8 147.3L528.9 117.7"/><path d="M613.4 646.1L613.4 614.9L613.4 583.9L613.4 553.2L613.4 522.7L613.4 492.4L613.4 462.2L613.4 432.2L613.4 402.2L613.4 372.3L613.4 342.5L613.4 312.6L613.4 282.6L613.4 252.6L613.4 222.4L613.4 192.1L613.4 161.4L613.4 130.5"/><path d="M850.3 610.3L841.1 580.5L831.9 550.9L822.8 521.5L813.8 492.4L804.9 463.4L795.9 434.6L787.1 405.9L778.2 377.3L769.4 348.8L760.6 320.2L751.7 291.7L742.9 263.1L734 234.4L725.1 205.5L716.1 176.5L707.1 147.3L697.9 117.7"/><path d="M1066 506.1L1048.4 480.3L1030.9 454.8L1013.5 429.4L996.3 404.3L979.2 379.2L962.2 354.3L945.2 329.6L928.3 304.8L911.4 280.2L894.6 255.5L877.7 230.8L860.8 206.1L843.8 181.3L826.8 156.4L809.6 131.4L792.4 106.1L774.9 80.6"/><path d="M1241.3 342.9L1216.8 323.4L1192.6 304.2L1168.5 285.1L1144.6 266.1L1120.9 247.3L1097.3 228.5L1073.7 209.9L1050.3 191.2L1026.8 172.7L1003.4 154.1L980 135.5L956.6 116.9L933.1 98.2L909.4 79.5L885.6 60.6L861.7 41.5L837.4 22.3"/><path d="M1360.5 135.1L1331.4 123.8L1302.5 112.5L1273.9 101.4L1245.5 90.3L1217.2 79.4L1189.1 68.4L1161.1 57.5L1133.2 46.7L1105.3 35.8L1077.5 25L1049.7 14.2L1021.7 3.3L993.8 -7.6L965.6 -18.5L937.3 -29.5L908.8 -40.6L880 -51.8"/><path d="M-68.9 86.6L-53.2 127.1L-35 166.5L-14.6 204.8L8.2 241.8L33.1 277.4L60.1 311.4L89.1 343.8L120 374.3L152.6 402.9L186.9 429.6L222.8 454.1L260 476.4L298.5 496.5L338.2 514.2L378.8 529.5L420.3 542.3L462.5 552.6L505.2 560.4L548.4 565.6L591.7 568.2L635.1 568.2L678.5 565.6L721.6 560.4L764.3 552.6L806.5 542.3L848 529.5L888.7 514.2L928.3 496.5L966.8 476.4L1004.1 454.1L1039.9 429.6L1074.2 402.9L1106.9 374.3L1137.8 343.8L1166.8 311.4L1193.8 277.4L1218.7 241.8L1241.4 204.8L1261.9 166.5L1280 127.1L1295.8 86.6"/><path d="M2.8 61.1L16.9 97.4L33.2 132.7L51.5 166.9L71.8 200.1L94.1 231.9L118.3 262.3L144.2 291.3L171.9 318.6L201.1 344.2L231.8 368L263.8 390L297.2 410L331.7 427.9L367.1 443.7L403.5 457.4L440.6 468.9L478.4 478.1L516.6 485.1L555.2 489.8L594 492.1L632.9 492.1L671.6 489.8L710.2 485.1L748.5 478.1L786.2 468.9L823.3 457.4L859.7 443.7L895.2 427.9L929.7 410L963 390L995.1 368L1025.8 344.2L1055 318.6L1082.6 291.3L1108.6 262.3L1132.7 231.9L1155 200.1L1175.4 166.9L1193.7 132.7L1209.9 97.4L1224 61.1"/><path d="M73.7 36L86.2 68L100.5 99.2L116.7 129.5L134.7 158.8L154.4 186.9L175.7 213.8L198.7 239.4L223.1 263.6L248.9 286.2L276.1 307.3L304.4 326.7L333.9 344.3L364.4 360.2L395.7 374.2L427.9 386.3L460.7 396.4L494.1 404.6L527.9 410.8L562 414.9L596.2 416.9L630.6 416.9L664.9 414.9L699 410.8L732.8 404.6L766.2 396.4L799 386.3L831.1 374.2L862.5 360.2L893 344.3L922.4 326.7L950.8 307.3L977.9 286.2L1003.8 263.6L1028.2 239.4L1051.1 213.8L1072.5 186.9L1092.2 158.8L1110.1 129.5L1126.3 99.2L1140.7 68L1153.1 36"/><path d="M144.1 11L155 38.8L167.4 66L181.5 92.3L197.2 117.8L214.3 142.2L232.9 165.6L252.8 187.9L274 208.9L296.5 228.6L320.1 246.9L344.7 263.8L370.4 279.1L396.9 292.9L424.1 305.1L452.1 315.6L480.6 324.4L509.6 331.5L539 336.9L568.7 340.4L598.5 342.2L628.4 342.2L658.2 340.4L687.8 336.9L717.2 331.5L746.2 324.4L774.8 315.6L802.7 305.1L830 292.9L856.5 279.1L882.1 263.8L906.8 246.9L930.4 228.6L952.8 208.9L974 187.9L994 165.6L1012.6 142.2L1029.7 117.8L1045.3 92.3L1059.4 66L1071.9 38.8L1082.7 11"/><path d="M214.7 -14L223.9 9.6L234.5 32.7L246.4 55.1L259.7 76.7L274.3 97.5L290 117.4L307 136.3L325 154.1L344.1 170.9L364.2 186.4L385.1 200.7L406.9 213.8L429.4 225.5L452.6 235.9L476.3 244.8L500.6 252.3L525.2 258.3L550.2 262.9L575.4 265.9L600.7 267.4L626.1 267.4L651.4 265.9L676.6 262.9L701.6 258.3L726.3 252.3L750.5 244.8L774.3 235.9L797.4 225.5L820 213.8L841.7 200.7L862.7 186.4L882.7 170.9L901.8 154.1L919.9 136.3L936.8 117.4L952.6 97.5L967.1 76.7L980.4 55.1L992.4 32.7L1003 9.6L1012.2 -14"/><path d="M285.9 -39.3L293.4 -19.9L302.1 -0.9L312 17.5L322.9 35.2L334.8 52.3L347.8 68.6L361.7 84.2L376.5 98.8L392.2 112.6L408.7 125.4L425.9 137.1L443.8 147.8L462.3 157.5L481.3 166L500.8 173.3L520.7 179.5L541 184.4L561.5 188.2L582.2 190.7L603 191.9L623.8 191.9L644.7 190.7L665.4 188.2L685.9 184.4L706.1 179.5L726 173.3L745.5 166L764.6 157.5L783.1 147.8L801 137.1L818.2 125.4L834.6 112.6L850.3 98.8L865.1 84.2L879 68.6L892 52.3L904 35.2L914.9 17.5L924.7 -0.9L933.4 -19.9L941 -39.3"/></g>
+          <g class="geo__routes"><path d="M307 40L182 95L161 178"/><path d="M279 115L161 178"/><path d="M161 178L121 226L71 271L40 286"/><path d="M121 226L120 294L78 377"/><path d="M226 250L206 284L260 300L301 322L310 297"/><path d="M346 314L427 286"/><path d="M468 398L470 424"/><path d="M872 434L815 266"/><path d="M71 271L120 294"/></g>
+          <path class="geo__main" d="M77 58L161 178L202 214L226 250L291 263L310 297L346 314L391 372L468 398L554 399L653 457L684 461L738 449L872 434L950 425L960 513"/>
+          <path class="geo__flow" d="M77 58L161 178L202 214L226 250L291 263L310 297L346 314L391 372L468 398L554 399L653 457L684 461L738 449L872 434L950 425L960 513"/>
+          <g class="geo__dots"><circle class="geo__city geo__city--2" cx="77" cy="58" r="3.5"><title>Калининград</title></circle><circle class="geo__city geo__city--1" cx="182" cy="95" r="5"><title>Санкт-Петербург</title></circle><circle class="geo__city geo__city--2" cx="307" cy="40" r="3.5"><title>Мурманск</title></circle><circle class="geo__city geo__city--2" cx="279" cy="115" r="3.5"><title>Архангельск</title></circle><circle class="geo__city geo__city--1" cx="161" cy="178" r="5"><title>Москва</title></circle><circle class="geo__city geo__city--2" cx="202" cy="214" r="3.5"><title>Нижний Новгород</title></circle><circle class="geo__city geo__city--1" cx="226" cy="250" r="5"><title>Казань</title></circle><circle class="geo__city geo__city--2" cx="206" cy="284" r="3.5"><title>Самара</title></circle><circle class="geo__city geo__city--2" cx="121" cy="226" r="3.5"><title>Воронеж</title></circle><circle class="geo__city geo__city--2" cx="71" cy="271" r="3.5"><title>Ростов-на-Дону</title></circle><circle class="geo__city geo__city--1" cx="40" cy="286" r="5"><title>Краснодар</title></circle><circle class="geo__city geo__city--2" cx="120" cy="294" r="3.5"><title>Волгоград</title></circle><circle class="geo__city geo__city--3" cx="78" cy="377" r="3"><title>Махачкала</title></circle><circle class="geo__city geo__city--2" cx="260" cy="300" r="3.5"><title>Уфа</title></circle><circle class="geo__city geo__city--2" cx="291" cy="263" r="3.5"><title>Пермь</title></circle><circle class="geo__city geo__city--1" cx="310" cy="297" r="5"><title>Екатеринбург</title></circle><circle class="geo__city geo__city--3" cx="301" cy="322" r="3"><title>Челябинск</title></circle><circle class="geo__city geo__city--2" cx="346" cy="314" r="3.5"><title>Тюмень</title></circle><circle class="geo__city geo__city--2" cx="427" cy="286" r="3.5"><title>Сургут</title></circle><circle class="geo__city geo__city--2" cx="391" cy="372" r="3.5"><title>Омск</title></circle><circle class="geo__city geo__city--1" cx="468" cy="398" r="5"><title>Новосибирск</title></circle><circle class="geo__city geo__city--3" cx="470" cy="424" r="3"><title>Барнаул</title></circle><circle class="geo__city geo__city--1" cx="554" cy="399" r="5"><title>Красноярск</title></circle><circle class="geo__city geo__city--1" cx="653" cy="457" r="5"><title>Иркутск</title></circle><circle class="geo__city geo__city--3" cx="684" cy="461" r="3"><title>Улан-Удэ</title></circle><circle class="geo__city geo__city--2" cx="738" cy="449" r="3.5"><title>Чита</title></circle><circle class="geo__city geo__city--1" cx="815" cy="266" r="5"><title>Якутск</title></circle><circle class="geo__city geo__city--2" cx="872" cy="434" r="3.5"><title>Благовещенск</title></circle><circle class="geo__city geo__city--1" cx="950" cy="425" r="5"><title>Хабаровск</title></circle><circle class="geo__city geo__city--1" cx="960" cy="513" r="5"><title>Владивосток</title></circle></g>
+          <g class="geo__labels"><text x="77" y="46" text-anchor="middle">Калининград</text><text x="192" y="99" text-anchor="start">Санкт-Петербург</text><text x="317" y="44" text-anchor="start">Мурманск</text><text x="151" y="182" text-anchor="end">Москва</text><text x="236" y="254" text-anchor="start">Казань</text><text x="40" y="306" text-anchor="middle">Краснодар</text><text x="320" y="301" text-anchor="start">Екатеринбург</text><text x="427" y="274" text-anchor="middle">Сургут</text><text x="458" y="402" text-anchor="end">Новосибирск</text><text x="554" y="387" text-anchor="middle">Красноярск</text><text x="653" y="477" text-anchor="middle">Иркутск</text><text x="825" y="270" text-anchor="start">Якутск</text><text x="950" y="413" text-anchor="middle">Хабаровск</text><text x="950" y="517" text-anchor="end">Владивосток</text></g>
+        </svg>
+      </div>
+
+      <ul class="geo__cities" aria-label="Крупные направления">
+        <li>Москва</li><li>Санкт-Петербург</li><li>Казань</li><li>Нижний Новгород</li><li>Екатеринбург</li><li>Новосибирск</li>
+        <li>Краснодар</li><li>Ростов-на-Дону</li><li>Самара</li><li>Уфа</li><li>Красноярск</li><li>Иркутск</li>
+        <li>Хабаровск</li><li>Владивосток</li><li>Калининград</li><li>и другие города</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- АВТОПАРК / ГАЛЕРЕЯ -->
+  <section class="section section--light" id="fleet">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Наш автопарк<br>в работе</h2>
+        <p class="section__lead">Реальные фото с погрузок и трасс. Volvo, Mercedes-Benz, Scania и DAF с двухъярусными платформами — летом и зимой, днём и ночью.</p>
+      </div>
+
+      <div class="gallery" id="gallery">
+        <a class="gallery__item gallery__item--w2 gallery__item--h2" href="img/work/volvo-evening-1600.webp" data-w="1600" data-h="1205">
+          <img src="img/work/volvo-evening-800.webp" width="800" height="602" loading="lazy" alt="Volvo FM с легковыми автомобилями, среди них — ретро «Волга»">
+        </a>
+        <a class="gallery__item" href="img/work/scania-night-1600.webp">
+          <img src="img/work/scania-night-800.webp" width="800" height="600" loading="lazy" alt="Scania с партией внедорожников на ночной стоянке">
+        </a>
+        <a class="gallery__item gallery__item--h2" href="img/work/red-actros-1600.webp">
+          <img src="img/work/red-actros-800.webp" width="800" height="1067" loading="lazy" alt="Mercedes-Benz Actros с новыми кроссоверами">
+        </a>
+        <a class="gallery__item" href="img/work/sunset-pickups-1600.webp">
+          <img src="img/work/sunset-pickups-800.webp" width="800" height="549" loading="lazy" alt="Автовоз с пикапами и легковыми машинами на закате">
+        </a>
+        <a class="gallery__item gallery__item--w2" href="img/work/scania-yard-1600.webp">
+          <img src="img/work/scania-yard-800.webp" width="800" height="450" loading="lazy" alt="Scania и Mercedes-Benz на площадке отгрузки новых автомобилей">
+        </a>
+        <a class="gallery__item gallery__item--h2" href="img/work/actros-forest-1600.webp">
+          <img src="img/work/actros-forest-800.webp" width="800" height="1063" loading="lazy" alt="Mercedes-Benz Actros с загрузкой на лесной дороге">
+        </a>
+        <a class="gallery__item" href="img/work/daf-xf-1600.webp">
+          <img src="img/work/daf-xf-800.webp" width="800" height="600" loading="lazy" alt="DAF XF с полной загрузкой седанов и кроссоверов">
+        </a>
+        <a class="gallery__item" href="img/work/night-snow-1600.webp">
+          <img src="img/work/night-snow-800.webp" width="800" height="600" loading="lazy" alt="Погрузка зимней ночью — работаем круглый год">
+        </a>
+        <a class="gallery__item gallery__item--w2" href="img/work/winter-dusk-1600.webp">
+          <img src="img/work/winter-dusk-800.webp" width="800" height="600" loading="lazy" alt="Зимний рейс: кроссоверы и минивэн на двух ярусах">
+        </a>
+        <a class="gallery__item" href="img/work/actros-autumn-1600.webp">
+          <img src="img/work/actros-autumn-800.webp" width="800" height="600" loading="lazy" alt="Mercedes-Benz Actros с белыми кроссоверами на стоянке">
+        </a>
+        <a class="gallery__item" href="img/work/ambulance-actros-1600.webp">
+          <img src="img/work/ambulance-actros-800.webp" width="800" height="549" loading="lazy" alt="Перевозка автомобилей скорой помощи">
+        </a>
+        <a class="gallery__item" href="img/work/carsharing-night-1600.webp">
+          <img src="img/work/carsharing-night-800.webp" width="800" height="600" loading="lazy" alt="Восемь кроссоверов каршеринга на одном автовозе">
+        </a>
+        <a class="gallery__item" href="img/work/volvo-peugeot-1600.webp">
+          <img src="img/work/volvo-peugeot-800.webp" width="800" height="602" loading="lazy" alt="Volvo с партией новых кроссоверов на площадке отгрузки">
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПРЕИМУЩЕСТВА -->
+  <section class="section section--dark-alt" id="why">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Почему с нами<br>удобно работать</h2>
+        <p class="section__lead">Отвечаем за перевозку от погрузки до сдачи и даём партнёрам всё, чтобы контролировать процесс без звонков и таблиц.</p>
       </div>
 
       <div class="features">
         <article class="feature feature--wide reveal">
-          <span class="feature__big">100%</span>
-          <h3>Страхование полной стоимости</h3>
-          <p>Каждый автомобиль застрахован на рыночную стоимость. Любое повреждение компенсируем в течение 10 рабочих дней.</p>
+          <span class="feature__big">0<small>посредников</small></span>
+          <h3>Свой парк автовозов</h3>
+          <p>Не перепродаём заказы посредникам: автовозы и водители — наши. Поэтому отвечаем за сроки и сохранность сами.</p>
         </article>
         <article class="feature reveal">
-          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <h3>GPS-трекинг</h3>
-          <p>Ссылка на карту с автовозом в реальном времени.</p>
+          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>
+          <h3>Договор и документы</h3>
+          <p>Работаем с юрлицами по договору: счёт, акты, транспортные документы.</p>
         </article>
         <article class="feature reveal">
-          <svg class="feature__icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h4"/></svg>
-          <h3>Цена без сюрпризов</h3>
-          <p>Сумма в договоре окончательная. Никаких доплат за топливо и простои.</p>
+          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+          <h3>Страхование груза</h3>
+          <p>Каждый автомобиль застрахован на время перевозки.</p>
         </article>
         <article class="feature reveal">
-          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-          <h3>Отправка за 24 часа</h3>
-          <p>Собственный парк — не ждём, пока соберётся полная загрузка.</p>
+          <svg class="feature__icon" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+          <h3>Акт и фотофиксация</h3>
+          <p>Осмотр при погрузке и выгрузке, фото состояния каждой машины.</p>
         </article>
         <article class="feature reveal">
-          <svg class="feature__icon" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>
-          <h3>Оплата по факту</h3>
-          <p>Основную часть оплачиваете после осмотра машины в городе получения.</p>
+          <svg class="feature__icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h3M8 17h6"/></svg>
+          <h3>Кабинет для партнёров</h3>
+          <p>Статусы, сроки и история каждой машины — онлайн, 24/7.</p>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- ROUTES -->
-  <section class="section section--light" id="routes">
-    <div class="container">
-      <div class="section__head">
-        <h2 class="section__title">Популярные<br>направления</h2>
-        <p class="section__lead">Цены для седана на открытом автовозе. Не нашли свой город? Доставим в любой — просто напишите.</p>
-      </div>
-
-      <div class="routes" id="routesTable" role="table" aria-label="Популярные направления">
-        <div class="routes__row routes__row--head" role="row">
-          <span role="columnheader">Город</span>
-          <span role="columnheader">Расстояние</span>
-          <span role="columnheader">Срок</span>
-          <span role="columnheader">Цена от</span>
+  <!-- О КОМПАНИИ -->
+  <section class="section section--light about" id="about">
+    <div class="container about__inner">
+      <figure class="about__photo reveal">
+        <img src="img/work/volvo-fm-800.webp" srcset="img/work/volvo-fm-800.webp 800w, img/work/volvo-fm-1600.webp 1200w"
+             sizes="(max-width: 900px) 100vw, 480px" width="1200" height="1600" loading="lazy"
+             alt="Тягач Volvo FM «Карго Экспресс» с загруженной платформой">
+      </figure>
+      <div class="about__text">
+        <h2 class="section__title">О компании</h2>
+        <!-- Текст можно заменить в админке: «Настройки сайта» → «О компании». -->
+        <div class="about__body" data-text="about">
+          <p>«Карго Экспресс» — транспортная компания, которая специализируется на перевозке автомобилей автовозами.
+            Работаем с дилерами, автопроизводителями, лизинговыми и каршеринговыми компаниями и государственными заказчиками.</p>
+          <p>Возим новые и подержанные легковые автомобили, кроссоверы, внедорожники, пикапы, микроавтобусы
+            и спецтранспорт — по всей России и в любое время года.</p>
         </div>
-      </div>
-      <button class="btn btn--outline-dark" id="routesMore">Показать все направления</button>
-    </div>
-  </section>
-
-  <!-- FLEET -->
-  <section class="section" id="fleet">
-    <div class="container">
-      <div class="section__head">
-        <h2 class="section__title">Собственный<br>автопарк</h2>
-        <p class="section__lead">Не перепродаём заказы посредникам. Все автовозы — наши, водители — в штате.</p>
-      </div>
-
-      <div class="fleet">
-        <article class="fleet__card reveal">
-          <div class="fleet__top">
-            <span class="tag tag--dark">Открытый</span>
-            <span class="fleet__count">48 ед.</span>
-          </div>
-          <h3>Автовоз на 8 машин</h3>
-          <p>Двухъярусная платформа с гидравликой. Оптимален по цене для большинства автомобилей.</p>
-          <ul class="fleet__specs">
-            <li><span>Вместимость</span><b>до 8 авто</b></li>
-            <li><span>Крепление</span><b>за колёса</b></li>
-            <li><span>Трекинг</span><b>GPS / ГЛОНАСС</b></li>
-          </ul>
-        </article>
-        <article class="fleet__card fleet__card--inverse reveal">
-          <div class="fleet__top">
-            <span class="tag">Закрытый</span>
-            <span class="fleet__count">12 ед.</span>
-          </div>
-          <h3>Закрытый автовоз</h3>
-          <p>Полная защита от погоды, пыли и сколов. Для премиальных, коллекционных и спортивных автомобилей.</p>
-          <ul class="fleet__specs">
-            <li><span>Вместимость</span><b>до 6 авто</b></li>
-            <li><span>Погрузка</span><b>низкий угол заезда</b></li>
-            <li><span>Защита</span><b>тент + пломба</b></li>
-          </ul>
-        </article>
-        <article class="fleet__card reveal">
-          <div class="fleet__top">
-            <span class="tag tag--dark">Экспресс</span>
-            <span class="fleet__count">20 ед.</span>
-          </div>
-          <h3>Эвакуатор-сцепка</h3>
-          <p>1–3 машины без попутной загрузки. Когда нужно быстрее, чем по графику.</p>
-          <ul class="fleet__specs">
-            <li><span>Вместимость</span><b>до 3 авто</b></li>
-            <li><span>Отправка</span><b>в день заявки</b></li>
-            <li><span>Скорость</span><b>до 900 км/сут</b></li>
-          </ul>
-        </article>
+        <a href="#partner" class="btn btn--dark">Стать партнёром <span class="arrow">→</span></a>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="section section--light" id="faq">
+  <section class="section" id="faq">
     <div class="container faq-wrap">
       <div class="section__head section__head--stack">
         <h2 class="section__title">Частые<br>вопросы</h2>
-        <p class="section__lead">Не нашли ответ? Позвоните — объясним на пальцах.</p>
-        <a href="tel:+79000000000" class="btn btn--dark" data-set="phone">+7 (900) 000-00-00</a>
+        <p class="section__lead">Не нашли ответ? Позвоните — обсудим вашу задачу.</p>
+        <a href="tel:+79000000000" class="btn btn--light" data-set="phone">+7 (900) 000-00-00</a>
       </div>
 
       <div class="faq">
         <details class="faq__item" open>
-          <summary>Какие документы нужны для перевозки?</summary>
-          <p>Паспорт отправителя и получателя, СТС или ПТС (электронный ПТС тоже подходит). Для автомобилей из-за рубежа — таможенные документы, которые мы можем получить за вас на СВХ.</p>
+          <summary>Работаете ли вы с юридическими лицами?</summary>
+          <p>Да, это наше основное направление. Заключаем договор, выставляем счета, предоставляем акты и транспортные документы. Форму оплаты и график расчётов согласуем в договоре.</p>
         </details>
         <details class="faq__item">
-          <summary>Что будет, если машину повредят в пути?</summary>
-          <p>При приёмке фиксируем состояние на 60+ фото и видео. Если при выдаче найдены новые повреждения — компенсируем ремонт по страховке в течение 10 рабочих дней. Сумма покрытия — полная рыночная стоимость автомобиля.</p>
+          <summary>Сколько машин вы можете перевезти?</summary>
+          <p>Один автовоз берёт до 8 легковых автомобилей. Для больших партий выделяем несколько автовозов и планируем отгрузки по графику.</p>
         </details>
         <details class="faq__item">
-          <summary>Можно ли положить вещи в салон?</summary>
-          <p>Да, до 50 кг в багажнике без доплаты. Вещи описываются в акте приёмки. Запрещены легковоспламеняющиеся жидкости и ценности.</p>
+          <summary>Как рассчитывается стоимость?</summary>
+          <p>Цена зависит от маршрута, количества и типа машин и регулярности отгрузок. Для постоянных партнёров фиксируем тарифы по направлениям в договоре.</p>
         </details>
         <details class="faq__item">
-          <summary>Как происходит оплата?</summary>
-          <p>Предоплата 10% при подписании договора, остаток — после осмотра автомобиля в городе получения. Принимаем безнал, карты и оплату по счёту для юрлиц с НДС.</p>
+          <summary>Что с сохранностью автомобилей?</summary>
+          <p>Груз застрахован на время перевозки. При погрузке фиксируем состояние каждой машины на фото и в акте, при выдаче сверяем по нему.</p>
         </details>
         <details class="faq__item">
-          <summary>Сколько бензина должно быть в баке?</summary>
-          <p>Достаточно 5–10 литров — только для погрузки и выгрузки. Полный бак не нужен.</p>
+          <summary>Как отслеживать перевозку?</summary>
+          <p>В личном кабинете видно статус каждой машины, историю и дату прибытия. Менеджер сообщает о ключевых этапах.</p>
         </details>
         <details class="faq__item">
-          <summary>Возите ли вы машины зимой?</summary>
-          <p>Круглый год. Зимой водители идут по трассам с проверенными стоянками, а для ценных автомобилей рекомендуем закрытый автовоз.</p>
+          <summary>Возите ли вы зимой и в отдалённые регионы?</summary>
+          <p>Круглый год и по всей сети федеральных трасс. Сроки в отдалённые регионы согласуем заранее.</p>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- REQUEST -->
-  <section class="section request" id="request">
+  <!-- СОТРУДНИЧЕСТВО -->
+  <section class="section request" id="partner">
     <div class="container request__inner">
       <div class="request__text">
-        <h2 class="section__title">Отправим вашу<br>машину уже завтра</h2>
-        <p class="section__lead">Оставьте номер — перезвоним за 15 минут, рассчитаем точную стоимость и забронируем место на ближайшем автовозе.</p>
+        <h2 class="section__title">Обсудим<br>вашу задачу</h2>
+        <p class="section__lead">Опишите маршруты и объёмы — подготовим предложение и договор под ваш график отгрузок.</p>
         <ul class="request__bullets">
-          <li>Бесплатная консультация</li>
-          <li>Цена фиксируется в договоре</li>
-          <li>Без предоплаты за расчёт</li>
+          <li>Ответим в течение рабочего дня</li>
+          <li>Индивидуальные тарифы для партнёров</li>
+          <li>Персональный менеджер на все перевозки</li>
         </ul>
       </div>
 
       <form class="request__form" id="requestForm" novalidate>
         <div class="input">
-          <input type="text" id="rName" name="name" placeholder=" " autocomplete="name" required>
-          <label for="rName">Ваше имя</label>
+          <input type="text" id="rCompany" name="company" placeholder=" " autocomplete="organization" maxlength="200">
+          <label for="rCompany">Компания</label>
         </div>
         <div class="input">
-          <input type="tel" id="rPhone" name="phone" placeholder=" " autocomplete="tel" required>
-          <label for="rPhone">Телефон</label>
+          <input type="text" id="rName" name="name" placeholder=" " autocomplete="name" maxlength="100" required>
+          <label for="rName">Контактное лицо *</label>
         </div>
-        <div class="input">
-          <input type="text" id="rRoute" name="route" placeholder=" ">
-          <label for="rRoute">Направление и модель авто</label>
+        <div class="request__row">
+          <div class="input">
+            <input type="tel" id="rPhone" name="phone" placeholder=" " autocomplete="tel" required>
+            <label for="rPhone">Телефон *</label>
+          </div>
+          <div class="input">
+            <input type="email" id="rEmail" name="email" placeholder=" " autocomplete="email" maxlength="200">
+            <label for="rEmail">Email</label>
+          </div>
+        </div>
+        <div class="input input--area">
+          <textarea id="rMessage" name="message" placeholder=" " rows="4" maxlength="2000"></textarea>
+          <label for="rMessage">Задача: маршруты, количество машин, сроки</label>
         </div>
         <label class="consent">
           <input type="checkbox" name="consent" required checked>
@@ -398,7 +459,7 @@
       <a href="#top" class="logo logo--big" aria-label="Карго Экспресс — наверх">
         <span class="logo__text">КАРГО<b>ЭКСПРЕСС</b></span>
       </a>
-      <p class="footer__slogan">Автомобили с Дальнего Востока —<br>в любую точку страны.</p>
+      <p class="footer__slogan">Перевозка автомобилей<br>автовозами по всей России.</p>
     </div>
 
     <div class="footer__grid">
@@ -408,9 +469,9 @@
         <a href="mailto:info@example.com" data-set="email">info@example.com</a>
       </div>
       <div>
-        <h4>Офис и площадка</h4>
-        <p data-set="address">г. Владивосток, ул. Примерная, 1</p>
-        <p data-set="hours">Ежедневно 08:00–20:00 (Влд)</p>
+        <h4>Офис</h4>
+        <p data-set="address" hidden></p>
+        <p data-set="hours">Ежедневно 08:00–20:00</p>
       </div>
       <div data-messengers>
         <h4>Мессенджеры</h4>
@@ -420,22 +481,32 @@
       </div>
       <div>
         <h4>Разделы</h4>
-        <a href="#calc">Калькулятор</a>
-        <a href="#routes">Направления</a>
-        <a href="#faq">Вопросы</a>
+        <a href="#services">Услуги</a>
+        <a href="#geo">География</a>
+        <a href="#fleet">Автопарк</a>
+        <a href="account.html">Кабинет партнёра</a>
       </div>
     </div>
 
     <div class="footer__bottom">
-      <span>© <span id="year"></span> Карго Экспресс. Все права защищены.</span>
-      <a href="account.html">Личный кабинет</a>
+      <span>© <span id="year"></span> Карго Экспресс</span>
+      <span class="footer__req" data-set="requisites" hidden></span>
     </div>
   </div>
 </footer>
 
-<a href="#request" class="fab" aria-label="Оставить заявку">Заявка →</a>
+<a href="#partner" class="fab" aria-label="Обсудить сотрудничество">Сотрудничество →</a>
 
-<script src="tariffs.js"></script>
+<dialog class="lightbox" id="lightbox" aria-label="Просмотр фото">
+  <figure class="lightbox__figure">
+    <img id="lightboxImg" alt="">
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+  <button class="lightbox__btn lightbox__btn--close" data-lb="close" aria-label="Закрыть">×</button>
+  <button class="lightbox__btn lightbox__btn--prev" data-lb="prev" aria-label="Предыдущее фото">←</button>
+  <button class="lightbox__btn lightbox__btn--next" data-lb="next" aria-label="Следующее фото">→</button>
+</dialog>
+
 <script src="site.js"></script>
 <script src="script.js"></script>
 </body>

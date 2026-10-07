@@ -158,7 +158,9 @@ function createStore(db) {
       hours: v.str(b.hours, { max: 200, field: 'Часы работы' }),
       telegram: v.str(b.telegram, { max: 200, field: 'Telegram' }),
       whatsapp: v.str(b.whatsapp, { max: 200, field: 'WhatsApp' }),
-      vk: v.str(b.vk, { max: 200, field: 'VK' })
+      vk: v.str(b.vk, { max: 200, field: 'VK' }),
+      about: v.str(b.about, { max: 5000, field: 'О компании' }),
+      requisites: v.str(b.requisites, { max: 1000, field: 'Реквизиты' })
     };
     for (const key of ['telegram', 'whatsapp', 'vk']) {
       if (next[key] && !/^https:\/\//.test(next[key])) throw new v.HttpError(400, `${key}: ссылка должна начинаться с https://`);
@@ -173,7 +175,11 @@ function createStore(db) {
     q.audit.run(user ? user.id : null, action, entity, String(entityId), String(details).slice(0, 1000));
   }
 
-  return { allTariffs, publicTariffs, labelTariffs, saveTariffs, settings, saveSettings, audit, quote: (...a) => T.quote(publicTariffs(), ...a) };
+  return {
+    allTariffs, publicTariffs, labelTariffs, saveTariffs, settings, saveSettings, audit,
+    quote: (...a) => T.quote(publicTariffs(), ...a),
+    routeQuote: (...a) => T.routeQuote(publicTariffs(), ...a)
+  };
 }
 
 module.exports = { createStore };

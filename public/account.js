@@ -243,10 +243,10 @@
       return '<a class="order-row" href="#order/' + o.id + '">' +
         '<span class="order-row__num">' + esc(o.number) + '<small>' + formatDate(o.createdAt) + '</small></span>' +
         '<span class="order-row__route"><b>' + esc(o.origin) + ' → ' + esc(o.city) + '</b>' +
-          '<span>' + fmt.format(o.km) + ' км · ' + o.days[0] + '–' + o.days[1] + ' дн.</span></span>' +
+          '<span>' + (o.km ? fmt.format(o.km) + ' км · ' + o.days[0] + '–' + o.days[1] + ' дн.' : 'срок уточняется') + '</span></span>' +
         '<span class="order-row__car"><b>' + esc(o.carModel) + '</b><span>' + esc(o.carTypeLabel) + '</span></span>' +
         badge(o.status) +
-        '<span class="order-row__price">' + fmt.format(o.price) + ' ₽</span>' +
+        '<span class="order-row__price">' + (o.price ? fmt.format(o.price) + ' ₽' : 'по запросу') + '</span>' +
       '</a>';
     }).join('');
   }
@@ -290,7 +290,8 @@
         '<button class="btn btn--outline-dark panel__action" id="cancelOrder">Отменить заявку</button></div>';
     }
 
-    var paid = o.paymentStatus === 'paid' ? 'Оплачен полностью'
+    var paid = !o.price ? 'Менеджер рассчитает стоимость и свяжется с вами'
+      : o.paymentStatus === 'paid' ? 'Оплачен полностью'
       : o.paymentStatus === 'prepaid' ? 'Предоплата ' + fmt.format(o.paidAmount) + ' ₽, остаток ' + fmt.format(Math.max(o.price - o.paidAmount, 0)) + ' ₽'
       : 'Оплата после осмотра при выдаче';
 
@@ -305,8 +306,8 @@
               '<div class="ta-r"><small>Куда</small><b>' + esc(o.city) + '</b></div>' +
             '</div>' +
             '<div class="progress">' + progress + '</div>' +
-            '<div class="detail__meta"><span>' + fmt.format(o.km) + ' км</span><span>' +
-              (o.eta ? 'Прибытие: ' + formatDay(o.eta) : 'Срок: ' + o.days[0] + '–' + o.days[1] + ' дн.') + '</span></div>' +
+            '<div class="detail__meta"><span>' + (o.km ? fmt.format(o.km) + ' км' : '') + '</span><span>' +
+              (o.eta ? 'Прибытие: ' + formatDay(o.eta) : o.days[1] ? 'Срок: ' + o.days[0] + '–' + o.days[1] + ' дн.' : 'Срок уточняется') + '</span></div>' +
           '</div>' +
           '<div class="panel"><h3>Автомобиль и детали</h3><dl class="kv">' +
             '<div><dt>Марка и модель</dt><dd>' + esc(o.carModel) + '</dd></div>' +
@@ -319,7 +320,7 @@
           '</dl></div>' +
         '</div>' +
         '<div>' +
-          '<div class="panel"><h3>Стоимость</h3><p class="detail__price">' + fmt.format(o.price) + ' ₽</p>' +
+          '<div class="panel"><h3>Стоимость</h3><p class="detail__price">' + (o.price ? fmt.format(o.price) + ' ₽' : 'Рассчитывается') + '</p>' +
             '<p class="view__sub">Страховка включена. ' + esc(paid) + '.</p></div>' +
           '<div class="panel"><h3>История</h3><ol class="timeline">' + events + '</ol></div>' +
           actions +
@@ -349,18 +350,16 @@
   /* ---------- Новый заказ ---------- */
 
   var orderForm = $('#orderForm');
-  var citySelect = $('#oCity');
+  var originInput = $('#oOrigin');
+  var cityInput = $('#oCity');
 
   function renderOrderForm() {
     var prev = orderForm.querySelector('input[name="carType"]') ? currentSelection() : null;
-    citySelect.innerHTML = '';
-    tariffs.cities.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); }).forEach(function (c) {
-      var opt = document.createElement('option');
-      opt.value = c.name;
-      opt.textContent = c.name;
-      citySelect.appendChild(opt);
-    });
-    citySelect.value = prev && T.findCity(tariffs, prev.city) ? prev.city : (T.findCity(tariffs, 'Москва') ? 'Москва' : tariffs.cities[0].name);
+    // Подсказки городов: из тарифов, но вписать можно любой город.
+    var names = tariffs.cities.map(function (c) { return c.name; }).concat([T.ORIGIN]);
+    $('#oCities').innerHTML = names.filter(function (n, i) { return names.indexOf(n) === i; })
+      .sort(function (a, b) { return a.localeCompare(b, 'ru'); })
+      .map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
 
     $('#oTypes').innerHTML = tariffs.carTypes.map(function (t, i) {
       var checked = prev && T.findCarType(tariffs, prev.carType) ? t.key === prev.carType : i === 0;
@@ -376,11 +375,12 @@
     $('#oOptions').closest('fieldset').hidden = !tariffs.options.length;
   }
 
-  // Предзаполнение из калькулятора на главной: account.html?city=…&type=…&opts=a,b#new
+  // Предзаполнение по ссылке: account.html?origin=…&city=…&type=…&opts=a,b#new
   var params = new URLSearchParams(location.search);
   if (location.search) history.replaceState(null, '', location.pathname + location.hash);
   function prefill() {
-    if (params.get('city') && T.findCity(tariffs, params.get('city'))) citySelect.value = params.get('city');
+    if (params.get('origin')) originInput.value = params.get('origin').slice(0, 100);
+    if (params.get('city')) cityInput.value = params.get('city').slice(0, 100);
     $$('input[name="carType"]', orderForm).forEach(function (i) { if (i.value === params.get('type')) i.checked = true; });
     var opts = (params.get('opts') || '').split(',');
     $$('input[name="opt"]', orderForm).forEach(function (i) { if (opts.indexOf(i.value) >= 0) i.checked = true; });
@@ -396,7 +396,8 @@
 
   function currentSelection() {
     return {
-      city: citySelect.value,
+      origin: originInput.value.trim(),
+      city: cityInput.value.trim(),
       carType: $('input[name="carType"]:checked', orderForm).value,
       options: $$('input[name="opt"]:checked', orderForm).map(function (i) { return i.value; })
     };
@@ -404,14 +405,20 @@
 
   function updateQuote() {
     var sel = currentSelection();
-    var q = T.quote(tariffs, sel.city, sel.carType, sel.options);
-    if (!q) return;
-    $('#oPrice').textContent = fmt.format(q.price);
-    $('#oRoute').textContent = T.ORIGIN + ' → ' + sel.city;
-    $('#oDays').textContent = q.days[0] + '–' + q.days[1] + ' дн.';
-    $('#oKm').textContent = fmt.format(q.km) + ' км';
+    var filled = sel.origin && sel.city;
+    var q = filled ? T.routeQuote(tariffs, sel.origin, sel.city, sel.carType, sel.options) : null;
+    var priced = q && q.priced;
+    var price = $('#oPrice');
+    price.textContent = priced ? fmt.format(q.price) + '\u00a0₽' : filled ? 'По запросу' : '—';
+    price.classList.toggle('calc__price--text', !!filled && !priced);
+    $('#oHint').textContent = priced ? 'Цена по тарифу фиксируется при создании заявки'
+      : filled ? 'На этот маршрут менеджер рассчитает цену и срок после заявки' : 'Укажите, откуда и куда везём';
+    $('#oRoute').textContent = filled ? sel.origin + ' → ' + sel.city : '—';
+    $('#oDays').textContent = priced ? q.days[0] + '–' + q.days[1] + ' дн.' : filled ? 'уточнит менеджер' : '—';
+    $('#oKm').textContent = priced ? fmt.format(q.km) + ' км' : '—';
   }
   orderForm.addEventListener('change', updateQuote);
+  orderForm.addEventListener('input', function (e) { if (e.target === originInput || e.target === cityInput) updateQuote(); });
 
   orderForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -421,6 +428,9 @@
     var vinValue = vin.value.trim().toUpperCase();
     var vinOk = !vinValue || /^[A-HJ-NPR-Z0-9]{17}$/.test(vinValue);
     vin.classList.toggle('is-invalid', !vinOk);
+    originInput.classList.toggle('is-invalid', !originInput.value.trim());
+    cityInput.classList.toggle('is-invalid', !cityInput.value.trim());
+    if (!originInput.value.trim() || !cityInput.value.trim()) return setStatus(orderForm, 'Укажите, откуда и куда везём', 'error');
     if (!model.value.trim()) return setStatus(orderForm, 'Укажите марку и модель', 'error');
     if (!vinOk) return setStatus(orderForm, 'VIN: 17 символов, латиница и цифры', 'error');
 

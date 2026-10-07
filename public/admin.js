@@ -19,7 +19,7 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function money(n) { return fmt.format(Math.round(n || 0)) + ' ₽'; }
+  function money(n) { return fmt.format(Math.round(n || 0)) + '\u00a0₽'; }
 
   // Даты из SQLite приходят в UTC без зоны: "2026-09-26 12:00:00".
   function formatDate(value, withTime) {
@@ -422,7 +422,7 @@
         '</section>' +
         '<section class="adm-grid adm-grid--even">' +
           '<div class="panel"><div class="panel__head"><h3>Заказы по статусам</h3><a class="panel__link" href="#orders">Все заказы →</a></div><div class="hbars" id="statusBars"></div></div>' +
-          '<div class="panel"><div class="panel__head"><h3>Популярные направления</h3><a class="panel__link" href="#tariffs">Тарифы →</a></div><div class="hbars" id="cityBars"></div></div>' +
+          '<div class="panel"><div class="panel__head"><h3>Популярные направления</h3><a class="panel__link" href="#tariffs">Тарифы →</a></div><div class="hbars hbars--routes" id="cityBars"></div></div>' +
         '</section>' +
         '<section class="adm-grid adm-grid--even">' +
           '<div class="panel"><div class="panel__head"><h3>Последние заказы</h3><a class="panel__link" href="#orders">Все →</a></div><div class="mini-list" id="recentOrders"></div></div>' +
@@ -456,15 +456,15 @@
 
       var maxC = Math.max.apply(null, d.cities.map(function (c) { return c.orders; }).concat([1]));
       $('#cityBars').innerHTML = d.cities.length ? d.cities.map(function (c) {
-        return hbar(esc(c.city) + '<small class="muted"> · ' + money(c.revenue) + '</small>', c.orders / maxC, fmt.format(c.orders));
+        return hbar(esc(c.city) + '<small class="muted">' + money(c.revenue) + '</small>', c.orders / maxC, fmt.format(c.orders));
       }).join('') : '<p class="panel__sub">Пока нет заказов</p>';
 
       $('#recentOrders').innerHTML = d.recentOrders.length ? d.recentOrders.map(function (o) {
-        return '<a href="#order/' + o.id + '"><span><b>' + esc(o.number) + '</b> · ' + esc(o.city) + '<small>' + esc(o.client.name) + ' · ' + esc(o.carModel) + '</small></span>' + badge(o.status) + '</a>';
+        return '<a href="#order/' + o.id + '"><span><b>' + esc(o.number) + '</b> · ' + esc(o.origin) + ' → ' + esc(o.city) + '<small>' + esc(o.client.name) + ' · ' + esc(o.carModel) + '</small></span>' + badge(o.status) + '</a>';
       }).join('') : '<p class="panel__sub">Заказов пока нет</p>';
 
       $('#recentLeads').innerHTML = d.recentLeads.length ? d.recentLeads.map(function (l) {
-        return '<div><span><b>' + esc(l.name) + '</b> · <a href="' + telHref(l.phone) + '">' + esc(l.phone) + '</a><small>' + esc(l.route || 'без направления') + ' · ' + formatDate(l.createdAt, true) + '</small></span>' +
+        return '<div><span><b>' + esc(l.name) + '</b> · <a href="' + telHref(l.phone) + '">' + esc(l.phone) + '</a><small>' + esc(l.company || l.route || 'частное лицо') + ' · ' + formatDate(l.createdAt, true) + '</small></span>' +
           '<span class="pill">' + esc(T.LEAD_STATUSES[l.status]) + '</span></div>';
       }).join('') : '<p class="panel__sub">Все заявки обработаны</p>';
     }).catch(handleError);
@@ -605,11 +605,11 @@
     return '<tr class="is-link" data-href="#order/' + o.id + '">' +
       '<td class="nowrap"><b>' + esc(o.number) + '</b><small>' + formatDate(o.createdAt) + '</small></td>' +
       '<td class="nowrap">' + esc(o.client.name) + '<small>' + esc(o.client.phone) + '</small></td>' +
-      '<td class="nowrap">→ ' + esc(o.city) + '<small>' + (o.eta ? 'ETA ' + formatDay(o.eta, true) : o.days[0] + '–' + o.days[1] + ' дн.') + '</small></td>' +
+      '<td class="nowrap">' + esc(o.origin) + ' → ' + esc(o.city) + '<small>' + (o.eta ? 'ETA ' + formatDay(o.eta, true) : o.days[1] ? o.days[0] + '–' + o.days[1] + ' дн.' : 'срок уточняется') + '</small></td>' +
       '<td>' + esc(o.carModel) + '<small>' + esc(o.carTypeLabel) + '</small></td>' +
       '<td>' + badge(o.status) + '</td>' +
       '<td>' + payPill(o) + '</td>' +
-      '<td class="num"><b>' + money(o.price) + '</b></td>' +
+      '<td class="num"><b>' + orderPrice(o) + '</b></td>' +
     '</tr>';
   }
 
@@ -628,13 +628,25 @@
     });
   }
 
-  function citySelect(name, selected) {
-    var cities = activeTariffs().cities.map(function (c) { return c.name; });
-    if (selected && cities.indexOf(selected) < 0) cities.unshift(selected);
-    cities.sort(function (a, b) { return a.localeCompare(b, 'ru'); });
-    return '<select class="select" name="' + name + '">' + cities.map(function (c) {
-      return '<option' + (c === selected ? ' selected' : '') + '>' + esc(c) + '</option>';
-    }).join('') + '</select>';
+  // Поле города с подсказками: города из тарифов, но можно вписать любой.
+  function cityInput(name, value, placeholder) {
+    return input(name, value, 'list="routeCities" maxlength="100" required autocomplete="off" placeholder="' + esc(placeholder) + '"');
+  }
+
+  function cityDatalist() {
+    var names = activeTariffs().cities.map(function (c) { return c.name; }).concat([T.ORIGIN]);
+    names = names.filter(function (n, i) { return names.indexOf(n) === i; }).sort(function (a, b) { return a.localeCompare(b, 'ru'); });
+    return '<datalist id="routeCities">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>';
+  }
+
+  // Маршрут из текста заявки, если клиент написал его через стрелку или тире: «Казань → Москва».
+  function parseRoute(text) {
+    var m = /([А-ЯЁA-Z][А-Яа-яЁёA-Za-z-]*(?:[ -][А-ЯЁA-Z][А-Яа-яЁёA-Za-z-]*)*)\s*(?:→|->|—|–)\s*([А-ЯЁA-Z][А-Яа-яЁёA-Za-z-]*(?:[ -][А-ЯЁA-Z][А-Яа-яЁёA-Za-z-]*)*)/.exec(text || '');
+    return m ? { origin: m[1], city: m[2] } : null;
+  }
+
+  function orderPrice(o) {
+    return o.price ? money(o.price) : '<span class="muted">по запросу</span>';
   }
 
   function typeSelect(name, selected) {
@@ -653,9 +665,10 @@
     }).join('') + '</div>';
   }
 
+  // { price, km, days, priced } по маршруту формы; priced: false — тарифа на маршрут нет.
   function tariffPrice(root) {
     var opts = $$('[data-opt]:checked', root).map(function (i) { return i.value; });
-    return T.quote(activeTariffs(), $('[name=city]', root).value, $('[name=carType]', root).value, opts);
+    return T.routeQuote(activeTariffs(), $('[name=origin]', root).value, $('[name=city]', root).value, $('[name=carType]', root).value, opts);
   }
 
   function renderOrder(o) {
@@ -672,8 +685,8 @@
       '<div class="adm-grid adm-grid--detail">' +
         '<form class="panel" id="orderForm" novalidate>' +
           '<div class="form-section"><h4>Маршрут и автомобиль</h4><div class="form-grid">' +
-            field('Откуда', '<div class="field__static">' + esc(o.origin) + '</div>') +
-            field('Куда', citySelect('city', o.city)) +
+            field('Откуда', cityInput('origin', o.origin, 'Город отправления')) +
+            field('Куда', cityInput('city', o.city, 'Город назначения')) +
             field('Марка и модель', input('carModel', o.carModel, 'maxlength="120" required')) +
             field('Тип', typeSelect('carType', o.carType)) +
             field('VIN', input('vin', o.vin, 'maxlength="17" autocapitalize="characters"')) +
@@ -683,7 +696,8 @@
           '</div></div>' +
           '<div class="form-section"><h4>Цена и оплата</h4><div class="form-grid">' +
             field('Цена, ₽', '<div class="price-row">' + input('price', o.price, 'type="number" min="0" step="500"') +
-              '<button type="button" class="btn btn--sm btn--outline-dark" id="byTariff">По тарифу</button></div>', '', 'Расстояние ' + fmt.format(o.km) + ' км, срок ' + o.days[0] + '–' + o.days[1] + ' дн.') +
+              '<button type="button" class="btn btn--sm btn--outline-dark" id="byTariff">По тарифу</button></div>', '',
+              o.km ? 'Расстояние ' + fmt.format(o.km) + ' км, срок ' + o.days[0] + '–' + o.days[1] + ' дн.' : 'На этот маршрут нет тарифа — цену и дату прибытия укажите вручную') +
             field('Статус оплаты', '<select class="select" name="paymentStatus">' + options(T.PAYMENT_STATUSES, o.paymentStatus) + '</select>') +
             field('Оплачено, ₽', input('paidAmount', o.paidAmount, 'type="number" min="0" step="500"')) +
             field('Остаток', '<div class="field__static" id="rest"></div>') +
@@ -695,6 +709,7 @@
             field('Заметка менеджера', textarea('managerNote', o.managerNote, 'maxlength="2000" rows="3" placeholder="Видят только сотрудники"'), 'span-all') +
           '</div></div>' +
           '<div class="form-actions"><button type="submit" class="btn btn--dark">Сохранить изменения</button><p class="form-status" role="status"></p></div>' +
+          cityDatalist() +
         '</form>' +
         '<div>' +
           '<form class="panel" id="statusForm">' +
@@ -726,7 +741,7 @@
 
     $('#byTariff').addEventListener('click', function () {
       var q = tariffPrice(form);
-      if (!q) return toast('Город или тип авто отсутствует в активных тарифах');
+      if (!q || !q.priced) return toast('На этот маршрут нет тарифа — укажите цену вручную');
       $('[name=price]', form).value = q.price;
       state.dirty = true;
       updateRest();
@@ -743,7 +758,7 @@
       e.preventDefault();
       var f = formData(form);
       var body = {
-        city: f.city, carType: f.carType, carModel: f.carModel, vin: f.vin.trim().toUpperCase(),
+        origin: f.origin, city: f.city, carType: f.carType, carModel: f.carModel, vin: f.vin.trim().toUpperCase(),
         pickupAddress: f.pickupAddress, comment: f.comment,
         options: $$('[data-opt]:checked', form).map(function (i) { return i.value; }),
         price: Number(f.price), paymentStatus: f.paymentStatus, paidAmount: Number(f.paidAmount || 0),
@@ -797,29 +812,31 @@
     Promise.all([loadTariffs(), clientReq]).then(function (res) {
       var t = activeTariffs();
       var picked = res[1];
-      var guessCity = 'Москва';
-      if (lead && lead.route) {
-        t.cities.forEach(function (c) { if (lead.route.toLowerCase().indexOf(c.name.toLowerCase()) >= 0) guessCity = c.name; });
-      }
+      var guess = lead ? parseRoute(lead.message) || parseRoute(lead.route) || {} : {};
+      var leadNote = lead ? ['Из заявки с сайта', lead.company, lead.message, lead.route, lead.estimate ? 'оценка ' + lead.estimate : '']
+        .filter(Boolean).join('. ') : '';
 
       content.innerHTML =
         '<form class="adm-grid adm-grid--detail" id="newOrder" novalidate>' +
           '<div class="panel">' +
             '<div class="form-section"><h4>Клиент</h4><div id="clientBox"></div></div>' +
             '<div class="form-section"><h4>Маршрут и автомобиль</h4><div class="form-grid">' +
-              field('Куда', citySelect('city', T.findCity(t, guessCity) ? guessCity : t.cities[0].name)) +
+              field('Откуда', cityInput('origin', guess.origin || '', 'Город отправления')) +
+              field('Куда', cityInput('city', guess.city || '', 'Город назначения')) +
               field('Тип', typeSelect('carType', t.carTypes[0].key)) +
               field('Марка и модель', input('carModel', '', 'maxlength="120" required placeholder="Toyota Camry, 2023"')) +
               field('VIN', input('vin', '', 'maxlength="17"')) +
               field('Где забрать', input('pickupAddress', '', 'maxlength="300" placeholder="Порт, СВХ, адрес"'), 'span-all') +
               field('Опции', optionChecks([]), 'span-all') +
               field('Комментарий клиента', textarea('comment', '', 'maxlength="1000" rows="2"'), 'span-all') +
-              field('Заметка менеджера', textarea('managerNote', lead ? 'Из заявки с сайта: ' + (lead.route || '') + (lead.estimate ? ', оценка ' + lead.estimate : '') : '', 'maxlength="2000" rows="2"'), 'span-all') +
+              field('Заметка менеджера', textarea('managerNote', leadNote, 'maxlength="2000" rows="2"'), 'span-all') +
             '</div></div>' +
+            cityDatalist() +
           '</div>' +
           '<aside class="calc__result">' +
-            '<p class="calc__label">Цена по тарифу</p>' +
-            '<p class="calc__price"><span id="nPrice">—</span>&nbsp;₽</p>' +
+            '<p class="calc__label" id="nLabel">Цена</p>' +
+            '<p class="calc__price" id="nPrice">—</p>' +
+            '<p class="calc__hint" id="nHint">Укажите маршрут</p>' +
             '<dl class="calc__details"><div><dt>Срок</dt><dd id="nDays">—</dd></div><div><dt>Расстояние</dt><dd id="nKm">—</dd></div></dl>' +
             '<div class="quote-extra"><div class="field"><label class="calc__label" for="nManual">Своя цена, ₽</label>' +
               '<input class="field__input" id="nManual" name="price" type="number" min="0" step="500" placeholder="Оставьте пустым — по тарифу"></div>' +
@@ -862,7 +879,7 @@
           box.innerHTML = '<div class="form-grid">' +
             field('Имя', input('clientName', lead ? lead.name : '', 'maxlength="100" required')) +
             field('Телефон', input('clientPhone', lead ? lead.phone : '', 'type="tel" data-phone required')) +
-            field('Email', input('clientEmail', '', 'type="email" maxlength="200"'), 'span-all', 'Необязательно. Нужен, чтобы клиент мог войти в кабинет') +
+            field('Email', input('clientEmail', lead ? lead.email : '', 'type="email" maxlength="200"'), 'span-all', 'Необязательно. Нужен, чтобы клиент мог войти в кабинет') +
           '</div><p class="field__hint"><button type="button" class="btn-link" data-mode="search">Выбрать из существующих</button></p>';
         }
       }
@@ -874,11 +891,19 @@
 
       function recalc() {
         var q = tariffPrice(form);
-        $('#nPrice').textContent = q ? fmt.format(q.price) : '—';
-        $('#nDays').textContent = q ? q.days[0] + '–' + q.days[1] + ' дн.' : '—';
-        $('#nKm').textContent = q ? fmt.format(q.km) + ' км' : '—';
+        var priced = q && q.priced;
+        var filled = $('[name=origin]', form).value.trim() && $('[name=city]', form).value.trim();
+        var manual = $('#nManual').value.trim();
+        // Крупная цифра — итоговая цена заказа: своя цена важнее тарифа.
+        $('#nLabel').textContent = manual ? 'Своя цена' : priced ? 'Цена по тарифу' : 'Цена';
+        $('#nPrice').textContent = manual ? money(Number(manual)) : priced ? money(q.price) : '—';
+        $('#nDays').textContent = priced ? q.days[0] + '–' + q.days[1] + ' дн.' : '—';
+        $('#nKm').textContent = priced ? fmt.format(q.km) + ' км' : '—';
+        $('#nHint').textContent = priced ? (manual ? 'По тарифу: ' + money(q.price) : 'Тариф ' + T.ORIGIN + ' ↔ город назначения')
+          : filled ? (manual ? 'Тарифа на маршрут нет — цена указана вручную' : 'Тарифа на маршрут нет — укажите свою цену') : 'Укажите маршрут';
       }
       form.addEventListener('change', recalc);
+      form.addEventListener('input', debounce(recalc, 200));
       recalc();
 
       form.addEventListener('submit', function (e) {
@@ -886,7 +911,7 @@
         var f = formData(form);
         var st = $('aside .form-status', form);
         var body = {
-          city: f.city, carType: f.carType, carModel: f.carModel, vin: f.vin.trim().toUpperCase(),
+          origin: f.origin, city: f.city, carType: f.carType, carModel: f.carModel, vin: f.vin.trim().toUpperCase(),
           pickupAddress: f.pickupAddress, comment: f.comment, managerNote: f.managerNote, eta: f.eta,
           options: $$('[data-opt]:checked', form).map(function (i) { return i.value; })
         };
@@ -895,6 +920,7 @@
         if (mode === 'picked') body.clientId = chosen.id;
         else if (mode === 'new') body.client = { name: f.clientName, phone: f.clientPhone, email: f.clientEmail };
         else return setStatus(st, 'Выберите клиента или создайте нового', 'error');
+        if (!f.origin.trim() || !f.city.trim()) return setStatus(st, 'Укажите, откуда и куда везём', 'error');
         if (!f.carModel.trim()) return setStatus(st, 'Укажите марку и модель', 'error');
 
         setStatus(st, 'Создаём…');
@@ -915,14 +941,14 @@
   function viewLeads(r) {
     var p = r.params;
     var page = Number(p.page) || 1;
-    setPage('Заявки с сайта', 'Обратные звонки из формы на главной странице');
+    setPage('Заявки с сайта', 'Заявки на сотрудничество из формы на главной странице');
     content.innerHTML =
       '<form class="toolbar" id="filters">' +
-        '<input class="field__input" type="search" name="q" placeholder="Имя, телефон, направление, комментарий" value="' + esc(p.q || '') + '">' +
+        '<input class="field__input" type="search" name="q" placeholder="Имя, компания, телефон, email, задача" value="' + esc(p.q || '') + '">' +
         '<select class="select" name="status">' + options(T.LEAD_STATUSES, p.status, 'Все статусы') + '</select>' +
       '</form>' +
-      '<div class="table-wrap"><table class="table"><thead><tr><th>Получена</th><th>Клиент</th><th>Направление</th><th>Оценка</th><th>Статус</th><th>Комментарий</th><th></th></tr></thead>' +
-      '<tbody id="rows"><tr class="empty-row"><td colspan="7">Загрузка…</td></tr></tbody></table></div><div id="pager"></div>';
+      '<div class="table-wrap"><table class="table"><thead><tr><th>Получена</th><th>Контакт</th><th>Компания и задача</th><th>Статус</th><th>Комментарий</th><th></th></tr></thead>' +
+      '<tbody id="rows"><tr class="empty-row"><td colspan="6">Загрузка…</td></tr></tbody></table></div><div id="pager"></div>';
 
     var filters = $('#filters');
     function apply(replace) { go(hashFor('leads', formData(filters)), replace); }
@@ -938,15 +964,16 @@
       $('#rows').innerHTML = res.leads.length ? res.leads.map(function (l) {
         return '<tr data-id="' + l.id + '">' +
           '<td class="nowrap">' + formatDate(l.createdAt, true) + '</td>' +
-          '<td><b>' + esc(l.name) + '</b><small><a href="' + telHref(l.phone) + '">' + esc(l.phone) + '</a></small></td>' +
-          '<td>' + esc(l.route || '—') + '</td>' +
-          '<td class="nowrap">' + esc(l.estimate || '—') + '</td>' +
+          '<td class="nowrap"><b>' + esc(l.name) + '</b><small><a href="' + telHref(l.phone) + '">' + esc(l.phone) + '</a></small>' +
+            (l.email ? '<small><a href="mailto:' + esc(l.email) + '">' + esc(l.email) + '</a></small>' : '') + '</td>' +
+          '<td class="lead-task">' + (l.company ? '<b>' + esc(l.company) + '</b>' : '<span class="muted">Без компании</span>') +
+            '<small>' + esc([l.message, l.route, l.estimate].filter(Boolean).join(' · ') || '—') + '</small></td>' +
           '<td><select class="select lead-status lead-status--' + esc(l.status) + '" data-status>' + options(T.LEAD_STATUSES, l.status) + '</select></td>' +
           '<td>' + (l.note ? esc(l.note) : '<span class="muted">—</span>') + ' <button class="btn-link" data-note>изменить</button></td>' +
           '<td class="nowrap"><button class="btn btn--sm btn--dark" data-order title="Оформить заказ по заявке">В заказ</button>' +
             (isAdmin() ? ' <button class="adm-icon-btn" data-del title="Удалить" aria-label="Удалить"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>' : '') +
           '</td></tr>';
-      }).join('') : '<tr class="empty-row"><td colspan="7">Заявок не найдено</td></tr>';
+      }).join('') : '<tr class="empty-row"><td colspan="6">Заявок не найдено</td></tr>';
       $('#pager').appendChild(pager(res.total, res.page, res.pageSize, function (n) { p.page = n; go(hashFor('leads', p)); }));
 
       $('#rows').addEventListener('change', function (e) {
@@ -975,7 +1002,7 @@
             }
           });
         } else if (e.target.closest('[data-del]')) {
-          confirmDialog('Удалить заявку?', lead.name + ', ' + lead.phone).then(function (ok) {
+          confirmDialog('Удалить заявку?', [lead.company, lead.name, lead.phone].filter(Boolean).join(', ')).then(function (ok) {
             if (ok) api('DELETE', '/admin/leads/' + lead.id).then(function () { toast('Заявка удалена'); route(); refreshCounts().catch(function () {}); }).catch(handleError);
           });
         }
@@ -1064,7 +1091,7 @@
             '<div class="table-wrap"><table class="table"><thead><tr><th>Заказ</th><th>Маршрут</th><th>Автомобиль</th><th>Статус</th><th>Оплата</th><th class="num">Цена</th></tr></thead><tbody>' +
             (res.orders.length ? res.orders.map(function (o) {
               return '<tr class="is-link" data-href="#order/' + o.id + '"><td class="nowrap"><b>' + esc(o.number) + '</b><small>' + formatDate(o.createdAt) + '</small></td>' +
-                '<td>→ ' + esc(o.city) + '</td><td>' + esc(o.carModel) + '</td><td>' + badge(o.status) + '</td><td>' + payPill(o) + '</td><td class="num">' + money(o.price) + '</td></tr>';
+                '<td>' + esc(o.origin) + ' → ' + esc(o.city) + '</td><td>' + esc(o.carModel) + '</td><td>' + badge(o.status) + '</td><td>' + payPill(o) + '</td><td class="num">' + orderPrice(o) + '</td></tr>';
             }).join('') : '<tr class="empty-row"><td colspan="6">Заказов пока нет</td></tr>') +
             '</tbody></table></div></div>' +
           '<div class="adm-grid adm-grid--three">' +
@@ -1193,7 +1220,7 @@
      ===================================================================== */
 
   function viewTariffs() {
-    setPage('Тарифы', 'Цены из Владивостока. Изменения сразу появятся в калькуляторе на сайте и в кабинете.');
+    setPage('Тарифы', 'Цены по направлениям между городом ' + T.ORIGIN + ' и городами списка (в обе стороны). Для остальных маршрутов цену назначает менеджер.');
     loadTariffs(true).then(function (t) {
       var data = JSON.parse(JSON.stringify(t));
       state.dirty = false;
@@ -1297,7 +1324,7 @@
      ===================================================================== */
 
   function viewSettings() {
-    setPage('Настройки сайта', 'Контакты, которые видят посетители на сайте и в личном кабинете');
+    setPage('Настройки сайта', 'Контакты и текст о компании, которые видят посетители сайта и личного кабинета');
     api('GET', '/settings').then(function (res) {
       var s = res.settings;
       content.innerHTML =
@@ -1311,6 +1338,11 @@
           field('WhatsApp', input('whatsapp', s.whatsapp, 'type="url" placeholder="https://wa.me/7…"')) +
           field('VK', input('vk', s.vk, 'type="url" placeholder="https://vk.com/…"')) +
         '</div><p class="field__hint">Пустые ссылки не показываются на сайте.</p></div>' +
+        '<div class="form-section"><h4>О компании</h4><div class="form-grid">' +
+          field('Текст «О компании»', textarea('about', s.about, 'maxlength="5000" rows="8" placeholder="История компании, опыт, ключевые клиенты. Каждый абзац — с новой строки."'), 'span-all',
+            'Показывается в разделе «О компании» на главной. Пусто — на сайте стоит текст по умолчанию.') +
+          field('Реквизиты', textarea('requisites', s.requisites, 'maxlength="1000" rows="3" placeholder="ООО «Карго Экспресс», ИНН …, ОГРН …"'), 'span-all', 'Показываются в подвале сайта') +
+        '</div></div>' +
         '<div class="form-actions"><button type="submit" class="btn btn--dark">Сохранить</button><a class="btn btn--outline-dark" href="./#contacts" target="_blank" rel="noopener">Посмотреть на сайте</a><p class="form-status" role="status"></p></div></form>';
 
       var form = $('#settingsForm');

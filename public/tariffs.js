@@ -4,6 +4,8 @@
 (function (root) {
   'use strict';
 
+  // Город, от которого заданы тарифы. Возим по всей России: маршрут без тарифа
+  // принимается без цены, её назначает менеджер.
   var ORIGIN = 'Владивосток';
 
   var DEFAULTS = {
@@ -115,6 +117,30 @@
     };
   }
 
+  function norm(s) { return String(s || '').trim().toLowerCase().replace(/ё/g, 'е'); }
+
+  // Тариф маршрута: действует, если один из концов — ORIGIN, а второй есть в списке городов.
+  function routeCity(tariffs, origin, dest) {
+    var other = norm(origin) === norm(ORIGIN) ? dest : norm(dest) === norm(ORIGIN) ? origin : null;
+    if (other === null) return null;
+    for (var i = 0; i < tariffs.cities.length; i++) if (norm(tariffs.cities[i].name) === norm(other)) return tariffs.cities[i];
+    return null;
+  }
+
+  // Расчёт для любого маршрута: { price, km, days, options, priced }. Без тарифа — priced: false
+  // и нули (цену назначит менеджер). null — неизвестный тип автомобиля.
+  function routeQuote(tariffs, origin, dest, carType, options) {
+    if (!findCarType(tariffs, carType)) return null;
+    var city = routeCity(tariffs, origin, dest);
+    if (city) {
+      var q = quote(tariffs, city.name, carType, options);
+      q.priced = true;
+      return q;
+    }
+    var opts = (options || []).filter(function (k, i, arr) { return findOption(tariffs, k) && arr.indexOf(k) === i; });
+    return { price: 0, km: 0, days: [0, 0], options: opts, priced: false };
+  }
+
   var api = {
     ORIGIN: ORIGIN,
     DEFAULTS: DEFAULTS,
@@ -128,7 +154,9 @@
     findOption: findOption,
     carTypeLabel: carTypeLabel,
     optionLabels: optionLabels,
-    quote: quote
+    quote: quote,
+    routeCity: routeCity,
+    routeQuote: routeQuote
   };
 
   if (typeof module === 'object' && module.exports) module.exports = api;

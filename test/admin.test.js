@@ -94,8 +94,14 @@ async function loginCookie(base, email, password) {
 test('менеджер оформляет заказ новому клиенту из заявки', async (t) => {
   const { m, client: mk } = await world(t);
   const anon = mk();
-  await anon('POST', '/api/leads', { name: 'Олег', phone: '+7 914 000-11-22', route: 'Владивосток → Омск' });
+  await anon('POST', '/api/leads', {
+    name: 'Олег', phone: '+7 914 000-11-22', company: 'ООО «Автодилер»', email: 'Oleg@Dealer.ru',
+    message: '20 машин в месяц, Казань → Москва', route: 'Владивосток → Омск'
+  });
   const lead = (await m('GET', '/api/admin/leads?status=new')).data.leads[0];
+  assert.equal(lead.company, 'ООО «Автодилер»');
+  assert.equal(lead.email, 'oleg@dealer.ru');
+  assert.equal((await m('GET', `/api/admin/leads?q=${encodeURIComponent('автодилер')}`)).data.leads.length, 1, 'поиск по компании');
 
   const res = await m('POST', '/api/admin/orders', {
     client: { name: 'Олег', phone: '+7 914 000-11-22' }, leadId: lead.id,
@@ -111,8 +117,19 @@ test('менеджер оформляет заказ новому клиенту
   assert.equal((await m('POST', '/api/admin/orders', { clientId: 999, city: 'Омск', carType: 'sedan', carModel: 'X' })).status, 400);
   assert.equal((await m('POST', '/api/admin/orders', { clientId: res.data.order.client.id, city: 'Омск', carType: 'sedan' })).status, 400);
 
+  // Любой маршрут: цену без тарифа менеджер ставит сам; смена маршрута пересчитывает расстояние.
+  const free = (await m('POST', '/api/admin/orders', {
+    clientId: res.data.order.client.id, origin: 'Казань', city: 'Москва', carType: 'sedan', carModel: 'Geely Coolray', price: 45000
+  })).data.order;
+  assert.equal(free.origin, 'Казань');
+  assert.equal(free.price, 45000);
+  assert.equal(free.km, 0);
+  const moved = (await m('PATCH', `/api/admin/orders/${free.id}`, { origin: 'Владивосток' })).data.order;
+  assert.equal(moved.km, T.DEFAULTS.cities.find((x) => x.name === 'Москва').km);
+  assert.equal(moved.price, 45000, 'цена при смене маршрута не меняется');
+
   const cl = await m('GET', `/api/admin/clients/${res.data.order.client.id}`);
-  assert.equal(cl.data.orders.length, 2);
+  assert.equal(cl.data.orders.length, 3);
   assert.equal(cl.data.client.hasPassword, false);
 });
 
@@ -187,7 +204,7 @@ test('тарифы и настройки влияют на сайт и расч�
   const order = (await c('POST', '/api/orders', { city: 'Москва', carType: 'sedan', options: [wash.key], carModel: 'Kia Rio' })).data.order;
   assert.equal(order.price, 203000);
   assert.deepEqual(order.optionLabels, ['Мойка перед выдачей']);
-  assert.equal((await c('POST', '/api/orders', { city: 'Якутск', carType: 'sedan', carModel: 'X' })).status, 400);
+  assert.equal((await c('POST', '/api/orders', { city: 'Якутск', carType: 'sedan', carModel: 'X' })).data.order.price, 0, 'отключённый город — без тарифа');
 
   // Опция, использованная в заказе, при удалении из тарифов только отключается — название в заказе сохраняется.
   const again = (await a('GET', '/api/admin/tariffs')).data;
@@ -203,6 +220,9 @@ test('тарифы и настройки влияют на сайт и расч�
   assert.equal(s.status, 200);
   assert.equal((await c('GET', '/api/settings')).data.settings.phone, '+7 (423) 200-00-00');
   assert.equal((await a('PUT', '/api/admin/settings', { phone: '84232000000', email: 'x@y.ru', telegram: 'javascript:alert(1)' })).status, 400);
+  const about = await a('PUT', '/api/admin/settings', { phone: '84232000000', email: 'x@y.ru', about: 'Работаем с 2015 года.\nСвой парк.', requisites: 'ООО «Карго Экспресс», ИНН 0000000000' });
+  assert.equal(about.status, 200);
+  assert.equal((await c('GET', '/api/settings')).data.settings.about, 'Работаем с 2015 года.\nСвой парк.');
 
   const log = (await a('GET', '/api/admin/audit')).data;
   assert.ok(log.entries.some((e) => e.action === 'Обновил тарифы' && e.user === 'Админ'));

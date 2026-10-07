@@ -73,7 +73,17 @@ test('заказы: цена считается на сервере, чужие 
   assert.equal((await a('POST', `/api/admin/orders/${id}/status`, { status: 'delivered' })).status, 403);
   assert.equal((await a('GET', '/api/admin/orders')).status, 403);
 
-  assert.equal((await a('POST', '/api/orders', { city: 'Атлантида', carType: 'sedan', carModel: 'X' })).status, 400);
+  // Маршрут без тарифа принимается без цены — её назначит менеджер.
+  const custom = (await a('POST', '/api/orders', { origin: 'Казань', city: 'Сочи', carType: 'sedan', carModel: 'X' })).data.order;
+  assert.equal(custom.origin, 'Казань');
+  assert.equal(custom.city, 'Сочи');
+  assert.equal(custom.price, 0);
+  assert.match(custom.events[0].note, /рассчитает менеджер/);
+  // Обратное направление считается по тому же тарифу.
+  const back = (await a('POST', '/api/orders', { origin: 'москва', city: 'Владивосток', carType: 'sedan', carModel: 'X' })).data.order;
+  assert.equal(back.price, T.quote(T.DEFAULTS, 'Москва', 'sedan', []).price);
+  assert.equal((await a('POST', '/api/orders', { city: 'Москва', carType: 'boat', carModel: 'X' })).status, 400);
+  assert.equal((await a('POST', '/api/orders', { origin: 'Казань', city: '', carType: 'sedan', carModel: 'X' })).status, 400);
   assert.equal((await a('POST', '/api/orders', { city: 'Москва', carType: 'sedan', carModel: '' })).status, 400);
   assert.equal((await a('POST', '/api/orders', { city: 'Москва', carType: 'sedan', carModel: 'X', vin: 'bad' })).status, 400);
 
@@ -95,6 +105,7 @@ test('защита: CSRF, битый JSON, заголовки, лимит вхо
 
   const c = client();
   assert.equal((await c('POST', '/api/leads', { name: 'X', phone: '+79140001122' }, { Origin: 'https://evil.example' })).status, 403);
+  assert.equal((await c('POST', '/api/leads', { name: 'X', phone: '+79140001122', email: 'не почта' })).status, 400);
 
   const broken = await fetch(base + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' });
   assert.equal(broken.status, 400);

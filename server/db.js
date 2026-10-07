@@ -10,11 +10,13 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'app.d
 const DEFAULT_SETTINGS = {
   phone: '+7 (900) 000-00-00',
   email: 'info@example.com',
-  address: 'г. Владивосток, ул. Примерная, 1',
-  hours: 'Ежедневно 08:00–20:00 (Влд)',
+  address: '',
+  hours: 'Ежедневно 08:00–20:00',
   telegram: '',
   whatsapp: '',
-  vk: ''
+  vk: '',
+  about: '',
+  requisites: ''
 };
 
 function open(file = DB_PATH) {
@@ -174,7 +176,20 @@ const MIGRATIONS = [
     T.DEFAULTS.options.forEach((o, i) => opt.run(o.key, o.label, o.hint, o.percent, o.fixed, i));
     const setting = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)');
     for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) setting.run(k, v);
-  }
+  },
+
+  // 3. Сайт-визитка для компаний: перевозки по всей России, заявки на сотрудничество.
+  (db) => db.exec(`
+    ALTER TABLE orders ADD COLUMN origin TEXT NOT NULL DEFAULT 'Владивосток';
+
+    ALTER TABLE leads ADD COLUMN company TEXT NOT NULL DEFAULT '';
+    ALTER TABLE leads ADD COLUMN email   TEXT NOT NULL DEFAULT '';
+    ALTER TABLE leads ADD COLUMN message TEXT NOT NULL DEFAULT '';
+
+    -- Заглушки, привязанные к Владивостоку, убираем; реальные значения не трогаем.
+    UPDATE settings SET value = '' WHERE key = 'address' AND value = 'г. Владивосток, ул. Примерная, 1';
+    UPDATE settings SET value = 'Ежедневно 08:00–20:00' WHERE key = 'hours' AND value = 'Ежедневно 08:00–20:00 (Влд)';
+  `)
 ];
 
 function migrate(db) {

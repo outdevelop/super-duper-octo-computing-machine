@@ -18,6 +18,19 @@
       el.hidden = !value;
       if (value) el.href = value;
     });
+    // Многострочные тексты (например, «О компании»): каждая строка — отдельный абзац.
+    // Если в настройках пусто, остаётся текст из HTML.
+    Array.prototype.forEach.call(document.querySelectorAll('[data-text]'), function (el) {
+      var value = (settings[el.getAttribute('data-text')] || '').trim();
+      if (!value) return;
+      el.textContent = '';
+      value.split(/\n+/).forEach(function (line) {
+        if (!line.trim()) return;
+        var p = document.createElement('p');
+        p.textContent = line.trim();
+        el.appendChild(p);
+      });
+    });
     Array.prototype.forEach.call(document.querySelectorAll('[data-messengers]'), function (box) {
       box.hidden = !box.querySelector('[data-link]:not([hidden])');
     });

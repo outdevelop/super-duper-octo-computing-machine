@@ -98,6 +98,10 @@ async function main() {
   async function settle(page, { hideHeader = false } = {}) {
     await page.evaluate(async (hide) => {
       await document.fonts.ready;
+      // Ленивые картинки грузим сразу, иначе на снимке блока они могут не успеть появиться.
+      const imgs = [...document.querySelectorAll('img')];
+      imgs.forEach((img) => { img.loading = 'eager'; });
+      await Promise.all(imgs.map((img) => (img.complete ? null : img.decode().catch(() => {}))));
       document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
       document.querySelectorAll('.fab, .toast').forEach((el) => { el.style.display = 'none'; });
       if (hide) document.querySelectorAll('.header').forEach((el) => { el.style.display = 'none'; });
@@ -192,12 +196,16 @@ async function main() {
     await settle(p);
     await shot(p, 'landing-hero');
     await settle(p, { hideHeader: true });
-    await p.check('input[name=type][value=suv]', { force: true });
-    await p.waitForTimeout(600);
-    for (const [name, sel] of [['landing-calculator', '#calc'], ['landing-steps', '#how'], ['landing-features', '.section--dark-alt'],
-      ['landing-routes', '#routes'], ['landing-fleet', '#fleet'], ['landing-faq', '#faq'], ['landing-request', '#request'], ['landing-footer', '.footer']]) {
+    for (const [name, sel] of [['landing-clients', '#clients'], ['landing-services', '#services'], ['landing-steps', '#how'],
+      ['landing-geo', '#geo'], ['landing-fleet', '#fleet'], ['landing-features', '#why'], ['landing-about', '#about'],
+      ['landing-faq', '#faq'], ['landing-request', '#partner'], ['landing-footer', '.footer']]) {
       await shot(p, name, sel);
     }
+    await p.evaluate(() => document.querySelectorAll('.header').forEach((el) => { el.style.display = ''; }));
+    await p.click('#gallery .gallery__item >> nth=2');
+    await p.waitForFunction(() => document.querySelector('#lightboxImg').complete);
+    await p.waitForTimeout(300);
+    await shot(p, 'landing-lightbox');
     await p.context().close();
 
     p = await newPage(MOBILE);
@@ -205,6 +213,12 @@ async function main() {
     await p.waitForTimeout(1500);
     await settle(p);
     await shot(p, 'mobile-landing-hero');
+    await settle(p, { hideHeader: true });
+    for (const [name, sel] of [['mobile-landing-clients', '#clients'], ['mobile-landing-services', '#services'], ['mobile-landing-geo', '#geo'], ['mobile-landing-fleet', '#fleet']]) {
+      await shot(p, name, sel);
+    }
+    await p.evaluate(() => { document.querySelectorAll('.header').forEach((el) => { el.style.display = ''; }); window.scrollTo(0, 0); });
+    await p.waitForTimeout(300);
     await p.click('#burger');
     await p.waitForTimeout(400);
     await shot(p, 'mobile-landing-menu');
@@ -225,6 +239,8 @@ async function main() {
     }
     await p.goto(base + '/account.html#new');
     await p.waitForTimeout(700);
+    await p.fill('#oOrigin', 'Владивосток');
+    await p.fill('#oCity', 'Москва');
     await p.fill('#oModel', 'Toyota RAV4, 2024');
     await shotFull(p, 'account-new-order');
     await p.goto(base + '/account.html#profile');
@@ -265,6 +281,12 @@ async function main() {
     for (const [name, hash] of pages) {
       await p.goto(base + '/admin.html' + hash);
       await p.waitForTimeout(900);
+      if (name === 'admin-new-order') {
+        await p.fill('#newOrder [name=origin]', 'Казань');
+        await p.fill('#newOrder [name=city]', 'Москва');
+        await p.fill('#nManual', '45000');
+        await p.waitForTimeout(400);
+      }
       await shotFull(p, name);
     }
     await p.goto(base + '/admin.html#dashboard');
@@ -291,7 +313,18 @@ async function main() {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 
-  console.log(`Скриншоты в ${path.relative(process.cwd(), OUT)}/: обновлено ${saved.length}, без изменений ${unchanged.length}`);
+  // Снимки страниц, которых больше нет в списке, удаляем, чтобы папка не устаревала.
+  const removed = [];
+  if (!errors.length) {
+    const made = new Set([...saved, ...unchanged].map((n) => n + '.png'));
+    for (const f of fs.readdirSync(OUT)) {
+      if (f.endsWith('.png') && !made.has(f)) { fs.rmSync(path.join(OUT, f)); removed.push(f); }
+    }
+  }
+
+  console.log(`Скриншоты в ${path.relative(process.cwd(), OUT)}/: обновлено ${saved.length}, без изменений ${unchanged.length}` +
+    (removed.length ? `, удалено устаревших ${removed.length}` : ''));
+  if (removed.length) console.log('  удалены: ' + removed.join(', '));
   if (saved.length) console.log('  обновлены: ' + saved.join(', '));
   if (errors.length) {
     console.error('Ошибки на страницах:\n  ' + errors.join('\n  '));

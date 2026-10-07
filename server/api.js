@@ -3,6 +3,7 @@
 // API сайта и личного кабинета клиента.
 
 const express = require('express');
+const T = require('../public/tariffs.js');
 const v = require('./validate');
 const { hashPassword, verifyPassword, DUMMY_HASH, createRateLimiter } = require('./auth');
 const { tx } = require('./db');
@@ -25,7 +26,7 @@ function createApi(db, auth, store) {
     updateProfile: db.prepare('UPDATE users SET name = ?, phone = ? WHERE id = ?'),
     updatePassword: db.prepare('UPDATE users SET password_hash = ? WHERE id = ?'),
     ordersByUser: db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC'),
-    insertLead: db.prepare('INSERT INTO leads (name, phone, route, estimate, user_id) VALUES (?, ?, ?, ?, ?)')
+    insertLead: db.prepare('INSERT INTO leads (name, phone, company, email, message, route, estimate, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
   };
 
   function ownOrder(req) {
@@ -123,11 +124,13 @@ function createApi(db, auth, store) {
 
   router.post('/orders', auth.requireUser, perMinute((req) => 'order:' + req.user.id), (req, res) => {
     const b = req.body || {};
-    const city = v.str(b.city, { max: 100, required: true, field: 'Город' });
+    // Откуда не указано — старые клиенты API: считаем, что из города тарифов.
+    const origin = v.str(b.origin, { max: 100, field: 'Откуда' }) || T.ORIGIN;
+    const city = v.str(b.city, { max: 100, required: true, field: 'Куда' });
     const carType = v.str(b.carType, { max: 40, required: true, field: 'Тип авто' });
     const options = Array.isArray(b.options) ? b.options.filter((o) => typeof o === 'string') : [];
-    const quote = store.quote(city, carType, options);
-    if (!quote) throw new v.HttpError(400, 'Неизвестный город или тип автомобиля');
+    const quote = store.routeQuote(origin, city, carType, options);
+    if (!quote) throw new v.HttpError(400, 'Неизвестный тип автомобиля');
 
     const carModel = v.str(b.carModel, { max: 120, required: true, field: 'Марка и модель' });
     const vin = v.vin(b.vin);
@@ -136,11 +139,11 @@ function createApi(db, auth, store) {
 
     const order = tx(db, () => {
       const { lastInsertRowid } = oq.insert.run(
-        req.user.id, city, carType, carModel, vin, JSON.stringify(quote.options),
+        req.user.id, origin, city, carType, carModel, vin, JSON.stringify(quote.options),
         pickupAddress, comment, quote.price, quote.km, quote.days[0], quote.days[1]
       );
       const id = Number(lastInsertRowid);
-      oq.insertEvent.run(id, 'new', 'Заявка создана в личном кабинете');
+      oq.insertEvent.run(id, 'new', quote.priced ? 'Заявка создана в личном кабинете' : 'Заявка создана в личном кабинете. Стоимость рассчитает менеджер');
       return oq.byId.get(id);
     });
     res.status(201).json({ order: clientOrder(order) });
@@ -166,9 +169,12 @@ function createApi(db, auth, store) {
     const b = req.body || {};
     const name = v.str(b.name, { max: 100, required: true, field: 'Имя' });
     const phone = v.phone(b.phone, { required: true });
+    const company = v.str(b.company, { max: 200, field: 'Компания' });
+    const email = v.email(b.email, { required: false });
+    const message = v.str(b.message, { max: 2000, field: 'Задача' });
     const route = v.str(b.route, { max: 300, field: 'Направление' });
     const estimate = v.str(b.estimate, { max: 50, field: 'Оценка' });
-    q.insertLead.run(name, phone, route, estimate, req.user ? req.user.id : null);
+    q.insertLead.run(name, phone, company, email, message, route, estimate, req.user ? req.user.id : null);
     res.status(201).json({ ok: true });
   });
 

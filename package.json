@@ -15,7 +15,8 @@
     "demo": "node --no-warnings scripts/demo.js",
     "screenshots": "node --no-warnings scripts/screenshots.js",
     "screenshots:setup": "playwright install chromium",
-    "test": "node --no-warnings --test test/*.test.js"
+    "test": "node --no-warnings --test test/*.test.js",
+    "photos": "node scripts/photos.js"
   },
   "dependencies": {
     "express": "^5.2.1"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@fontsource-variable/manrope": "5.3.0",
     "@fontsource-variable/unbounded": "5.3.0",
-    "playwright": "1.56.1"
+    "playwright": "1.56.1",
+    "sharp": "0.35.5"
   }
 }

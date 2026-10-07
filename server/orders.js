@@ -23,7 +23,7 @@ function serializeOrder(o, tariffs, { staff = false } = {}) {
   const out = {
     id: o.id,
     number: orderNumber(o.id),
-    origin: T.ORIGIN,
+    origin: o.origin || T.ORIGIN,
     city: o.city,
     carType: o.car_type,
     carTypeLabel: T.carTypeLabel(tariffs, o.car_type),
@@ -58,8 +58,8 @@ function createOrderQueries(db) {
     byId: db.prepare(ORDER_WITH_CLIENT + ' WHERE o.id = ?'),
     events: db.prepare('SELECT status, note, created_at FROM order_events WHERE order_id = ? ORDER BY id'),
     insert: db.prepare(`
-      INSERT INTO orders (user_id, city, car_type, car_model, vin, options, pickup_address, comment, price, km, days_min, days_max)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+      INSERT INTO orders (user_id, origin, city, car_type, car_model, vin, options, pickup_address, comment, price, km, days_min, days_max)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
     insertEvent: db.prepare('INSERT INTO order_events (order_id, status, note) VALUES (?, ?, ?)'),
     setStatus: db.prepare("UPDATE orders SET status = ?, updated_at = datetime('now') WHERE id = ?")
   };
